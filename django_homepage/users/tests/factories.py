@@ -1,4 +1,4 @@
-from typing import Any, Sequence
+"""from typing import Any, Sequence
 
 from django.contrib.auth import get_user_model
 from factory import DjangoModelFactory, Faker, post_generation
@@ -29,3 +29,4 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
         django_get_or_create = ["username"]
+"""
