@@ -1,4 +1,4 @@
-import pytest
+"""import pytest
 from django.test import RequestFactory
 
 from django_homepage.users.models import User
