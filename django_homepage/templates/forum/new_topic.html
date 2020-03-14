@@ -1,0 +1,59 @@
+{% extends '../base.html' %}
+{% block content %}
+<style type="text/css">
+  .sub_category{
+    display: none;
+  }
+</style>
+<div class="main_container">
+     <div class="container">
+        <div class="row middle_container">
+          {% include 'forum/left_menu.html' %}
+          <div class="main_left_container col-md-9 col-md-pull-3 col-sm-9 col-sm-pull-3 col-sm-8 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-body">
+               <div class="new_topic_container">
+                  <!--<h3 class="create_topic_heading">Please ask your question here</h3>-->
+
+                <form method="post" action="{% url 'myforum:new_topic' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Please enter your question </label>
+                      {{ form.title }}
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Select Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="form-group sub_category">
+                      <label for="exampleInputPassword1">Select Sub Category</label>
+                      <select class="form-control" name="sub_category" id="sub_category">
+                          <option value="">Select A Category</option>
+                          {% for category in sub_categories %}
+                            <option value='{{ category.id }}' class='{{ category.parent.id }}'>{{ category.title }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Add Description</label>
+                       {{ form.media }}
+                       {{ form.description }}
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Choose optional tags for this topic</label>
+                       {{ form.tags }}
+                    </div>
+                    <input type="submit" value="submit" class="btn btn-default">
+                </form>
+               </div>
+              </div>
+            </div>
+          </div>
+        </div>
+     </div>
+   </div>
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}

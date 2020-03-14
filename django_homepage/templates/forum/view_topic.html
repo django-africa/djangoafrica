@@ -1,0 +1,561 @@
+{% extends 'base.html' %}
+{% load forum_tags %}
+{% load thumbnail %}
+{% block content %}
+<style type="text/css">
+  .active{
+    color: red !important;
+  }
+  .reply_comments{
+    margin-left: 40px;
+  }
+</style>
+<div class="main_container">
+  <div class="container">
+    <div class="row middle_container">
+      {% include 'forum/left_menu.html' %}
+      <div class="main_left_container col-md-9 col-md-pull-3 col-sm-9 col-sm-pull-3 col-sm-8 col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+          {% if not request.user.is_authenticated %}
+          <!-- alert-box -->
+            <div class="alert alert-warning fade show" id="alert" role="alert">
+              <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <center><strong> Please login to vote</strong></center>
+            </div>
+          <!-- /end -->
+          {% endif %}
+            <div class="view_topic_container">
+              <div class="main_view_container">
+                <div class="view_content_description">
+                  <h3 class="create_topic_heading">{{ topic.title|capfirst }}</h3>
+                  {% if topic.created_by == request.user %}
+                    <a href="{% url 'myforum:topic_update' topic.slug %}"> Update</a>
+                    <a href="{% url 'myforum:delete_topic' topic.slug %}"> delete </a>
+                  {% endif %}
+                  <div class="follow_votes">
+                    {% if request.user.is_authenticated %}
+                    <span class="follow" ><a href="#" class="follow_topic" data-href="{% url "myforum:follow_topic" topic.slug %}">{% if topic.id|is_topic_followed:request.user.id %}Followed{% else %}Follow{% endif %}</a></span>
+                    {% endif %}
+                    <span class="votes"><a href="#" class="loss vote_topic" id="down_vote" data-href="{% url "myforum:topic_vote_down" topic.slug %}"><i class="fa fa-minus"></i><span id="down_votes">{{ topic.down_votes_count }}</span></a>Votes<a href="#" class="gain vote_topic" id="up_vote" data-href="{% url "myforum:topic_vote_up" topic.slug %}"><i class="fa fa-plus"></i><span id="up_votes">{{ topic.up_votes_count }}</span></a></span>
+                  </div>
+                  <p>{{topic.description|safe}}</p>
+                  <div class="tags">
+                    <ul class="category_tags">
+                      {% for tag in topic.tags.all %}
+                      <li class="tag_item"><a href="#">{{ tag.title }}</a>
+                        {% endfor %}
+                        <br clear="all">
+                    </ul>
+                  </div>
+                  <div class="other_views">
+                    <ul class="users_list">
+                        {% comment %} {% if not topic.get_topic_users %}
+                          no user for this topic
+                        {% else %}
+                          {% for user in topic.get_topic_users %}
+                            <li><a href="{% url 'users:detail' user.username %}" title="{{ user.username }}"><img src="{% if user.profile_pic %}{% thumbnail user.profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"></a></li>
+                          {% endfor %}
+                        {% endif %} {% endcomment %}
+                      <div class="clearfix"></div>
+                    </ul>
+                    <ul>
+                      <li><a href="{% url 'users:detail' request.user.username %}"><img src="{% if topic.created_by|user_profile_pic %}{% thumbnail topic.created_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Created By<small>{{ topic.created_by.username }}, {{ topic.created_on }}</small></span></a></li>
+                      {% if topic.get_last_comment %}
+                      <li><a href="{% url 'users:detail' topic.get_last_comment.commented_by.username %}"><img src="{% if topic.get_last_comment.commented_by|user_profile_pic %}{% thumbnail topic.get_last_comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Last Replied By<small>{{ topic.get_last_comment.commented_by.username }}, {{ topic.get_last_comment.updated_on }}</small></span></a></li>
+                      {% endif %}
+                      <div class="clearfix"></div>
+                    </ul>
+                  </div>
+                </div>
+                <div class="topic_options">
+                  <div class="topic_count">
+                    <span class="category"><a href="#" class="disclosure">{{ topic.category.title }} </a></span>
+                    <span class="reply"><i class="fa fa-reply"></i>Replies {{ topic.get_all_comments|length }} </span>
+                    <span class="views"><i class="fa fa-eye"></i> Views {{ topic.no_of_views }} </span>
+                    <span class="users"><i class="fa fa-users" aria-hidden="true"></i> Users <span class="no_of_users">{{ topic.get_topic_users|length }}</span> </span>
+                  </div>
+                  <div class="user_options pull-right">
+                  {% if request.user.is_authenticated %}
+                    <ul>
+                      <li><a href="#" data-toggle="popover" data-container="body" data-placement="top" type="button" data-html="true"><i class="fa fa-share-alt"></i></a></li>
+                      <li><a href="#" data-toggle="modal" data-target="#reply_comment"><i class="fa fa-reply"></i>Reply</a></li>
+                    </ul>
+                  {% endif %}
+                    {% for comment in topic.get_all_comments %}
+                      <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="modal_comment_{{ comment.id }}">
+                        <div class="modal-dialog modal-lg">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <h4 class="modal-title" id="myModalLabel">Write Reply For {{ topic.title }}</h4>
+                            </div>
+                            <div class="modal-body">
+                              <div class="new_topic_container">
+                                <form name="editcommentform" id='editcommentform_{{ comment.id }}' class="edit_comment_form" method="POST" data-href="{% url "myforum:comment_edit" comment.id%}">
+                                  {% csrf_token %}
+                                  <div class="form-group">
+                                    <label for="exampleInputEmail1">Add Description</label>
+                                    <textarea class="form-control textareacontents mention" name='comment' id='comment'>{{ comment.comment }}</textarea>
+                                    <input type="hidden" name="parent" id="parent" value="{{ comment.parent.id }}"/>
+                                    <input type="hidden" name="topic" id="topic" value="{{ comment.topic.id }}"/>
+                                  </div>
+                                  <!--<div class="form-group">
+                                    <label for="exampleInputEmail1">Add Description</label>
+                                    <input type="hidden" name="attachment" id="attachment" value=""/>
+                                  </div>-->
+                                  <button type="submit" class="btn btn-default">Comment</button>
+                                  <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    <!-- reply modal start here -->
+                    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="reply_comment">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Write Reply For {{ topic.title }}</h4>
+                          </div>
+                          <div class="modal-body">
+                            <div class="new_topic_container">
+                              <form name="newcommentform" id='newcommentform' class="newcommentform" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                  <label for="exampleInputEmail1">Add Description</label>
+                                  <textarea class="form-control textareacontents mention" name='comment' id='comment'></textarea>
+                                  <input type="hidden" name="topic" id="topic" value="{{ topic.id }}"/>
+                                  <input type="hidden" name="parent" id="parent" value=""/>
+                                </div>
+                                <!--<div class="form-group">
+                                  <label for="exampleInputEmail1">Add Description</label>
+                                  <input type="hidden" name="attachment" id="attachment" value=""/>
+                                </div>-->
+                                <button type="submit" class="btn btn-default">Comment</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- reply modal ends here-->
+                    <div id="popover-content" class="hide">
+                      <ul class="list-inline">
+
+                <!--<li><a href=="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ minified_url }}" target="_blank" class="envelope social"><i class="fa fa-envelope"></i></a></li>-->
+                        <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ minified_url }}&t={{ topic.title }}" target="_blank" class="facebook"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="https://twitter.com/intent/tweet?text={{ job.title }}&url={{ minified_url }}&via=PeelJobs" target="_blank" class="twitter"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="https://plus.google.com/share?hl=en-US&url={{ minified_url }}" target="_blank" class="google"><i class="fa fa-google-plus"></i></a></li>
+                        <li><a href="https://www.linkedin.com/cws/share?url={{ minified_url }}&token=&isFramed=true" target="_blank" class="youtube"><i class="fa fa-linkedin"></i></a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% for comment in topic.get_comments %}
+              <div class="main_view_container reply_view_container">
+                <div class="view_content_description">
+                  <div class="other_views">
+                    <ul>
+                      <li><a href="#"><img src="{% if comment.commented_by|user_profile_pic %}{% thumbnail comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Replied By<small>{{ comment.commented_by.username }}</small></span></a></li>
+                    </ul>
+                    <div class="follow_votes">
+                      <span class="votes"><a href="#" class="loss vote_topic comment_down_vote" data-href="{% url "myforum:comment_vote_down" comment.id %}"><i class="fa fa-minus"></i><span class="comment_down_votes_count">{{ comment.down_votes_count }}</span></a>Votes<a href="#" class="gain vote_topic comment_up_vote" data-href="{% url "myforum:comment_vote_up" comment.pk %}"><i class="fa fa-plus"></i><span class="comment_up_votes_count">{{ comment.up_votes_count }}</span></a></span>
+                    </div>
+                  </div>
+                  <!--  <div class="topic_img_block"><img src="http://www.hdwallpapers.in/walls/ice_age_collision_course_5k-wide.jpg" /></div> -->
+                  <p class="auto_link">{{ comment.comment|safe }}
+                  </p>
+                </div>
+                <div class="topic_options">
+                  {% if comment.get_comments %}
+                  <div class="topic_count">
+                    <span class="reply"><i class="fa fa-reply"></i>Replies {{ comment.get_comments|length }} </span>
+                  </div>
+                  {% endif %}
+                  {% if comment.commented_by == request.user %}
+                  <div class="topic_count">
+                    <a href="#" data-toggle="modal" data-target="#modal_comment_{{ comment.id }}"><i class="fa fa-reply"></i><span class="reply">Edit</span></a>
+                  </div>
+                  <div class="topic_count">
+                    <a  href="{% url "myforum:comment_delete" comment.id %}" class="delete-comment" id="comment_{{ comment.id }}"><span class="reply"><i class="fa fa-reply"></i>Delete</span></a>
+                  </div>
+                  {% endif %}
+                  <div class="user_options pull-right">
+                    <ul>
+                      <li><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg-{{ comment.id }}"><i class="fa fa-reply"></i>Reply</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade bs-example-modal-lg-{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel">Write Reply For {{ topic.title }}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="new_topic_container">
+                        <form name="editcommentform" id='editcommentform' method="post" class="editcommentform">
+                          {% csrf_token %}
+                          <div class="form-group">
+                            <label for="exampleInputEmail1">Add Description</label>
+                            <textarea class="form-control textareacontents mention" name='comment' id='comment'></textarea>
+                            <input type="hidden" name="topic" id="topic" value="{{ topic.id }}"/>
+                            <input type="hidden" name="parent" id="parent" value="{{ comment.id }}"/>
+                          </div>
+                          <button type="submit" class="btn btn-default">Comment</button>
+                          <button type="submit" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+                {% for comment in comment.comment_parent.all %}
+                {% for comment in comment|sub_comments %}
+
+                <div class="main_view_container reply_view_container reply_comments">
+                <div class="view_content_description">
+                  <div class="other_views">
+                    <ul>
+                      <li><a href="#"><img src="{% if comment.commented_by|user_profile_pic %}{% thumbnail comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Replied By<small>{{ comment.commented_by.username }}</small></span></a></li>
+                    </ul>
+                  </div>
+                  <!--  <div class="topic_img_block"><img src="http://www.hdwallpapers.in/walls/ice_age_collision_course_5k-wide.jpg" /></div> -->
+                  <p class="auto_link">{{ comment.comment|safe }}
+                  </p>
+                </div>
+                <div class="topic_options">
+                  {% if comment.commented_by == request.user %}
+                  <div class="topic_count">
+                    <span class="reply"><i class="fa fa-reply"></i>Edit </span>
+                  </div>
+                  <div class="topic_count">
+                    <a href="#" id="comment_{{ comment.id }}" class="delete-comment" data-href="{% url "myforum:comment_delete" comment.id %}"><span class="reply"><i class="fa fa-reply"></i>Delete</span></a>
+                  </div>
+                  {% endif %}
+                  <div class="user_options pull-right">
+                    <ul>
+                      <li><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg-{{ comment.id }}"><i class="fa fa-reply"></i>Reply</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade bs-example-modal-lg-{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel">Write Reply For {{ topic.title }}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="new_topic_container">
+                        <form name="editcommentform" id='editcommentform' method="POST" class="editcommentform">
+                          {% csrf_token %}
+                          <div class="form-group">
+                            <label for="exampleInputEmail1">Add Description</label>
+                            <textarea class="form-control textareacontents mention" name='comment' id='comment'></textarea>
+                            <input type="hidden" name="topic" id="topic" value="{{ topic.id }}"/>
+                            <input type="hidden" name="parent" id="parent" value="{{ comment.id }}"/>
+                          </div>
+                          <button type="submit" class="btn btn-default">Comment</button>
+                          <button type="submit" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+                {% endfor %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+            {% if suggested_topics %}
+            <h4 class="inner_page_heading">Suggested Topics</h4>
+            <div class="topic_container">
+              {% for topic in suggested_topics %}
+              <div class="topic_block">
+                <div class="topic_title">
+                  <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
+                </div>
+                <div class="topic_options">
+                  <span class="category"><a href="#" class="gaming">{{ topic.category.title }} </a></span><span class="activity">Updated on {{ topic.updated_on }}</span>
+                  <span class="reply"><a href="#"><i class="fa fa-reply"></i>Replies </a></span>
+                  <span class="views"><a href="#"><i class="fa fa-eye"></i> Views {{ topic.no_of_views }} </a></span>
+                </div>
+                {% comment %} <div class="topic_users">
+                  <ul class="users_list">
+                    {% for user in topic.get_topic_users %}
+                    {% if user %}<li><a href="#" title="{{ user.user.username }}"><img src="{% if user.user.profile_pic %}{% thumbnail user.user.profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"></a></li>{% endif %}
+                    {% endfor %}
+                  </ul>
+                </div> {% endcomment %}
+                <br clear="all">
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script type="text/javascript">
+
+
+  function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+          var cookie = jQuery.trim(cookies[i]);
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+  }
+
+  $.ajaxSetup({
+      data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+  })
+  var csrftoken = getCookie('csrftoken');
+
+    $('form.newcommentform').submit(function(e){
+        e.preventDefault();
+        var str = $(this).find('.mention').val();
+        var pattern = /\B@[a-z0-9_.-]+/gi;
+        var mentioned_users = str.match(pattern);
+        $('<input>', {
+          type: 'hidden',
+          headers: { "X-CSRFToken": token},
+          id: 'mentioned_user',
+          name: 'mentioned_user',
+          value: mentioned_users
+        }).appendTo('form.editcommentform');
+
+        var id = $(this).parent().prev().find('div.name').attr('id');
+        var form = $(this);
+        var formData = new FormData($(this)[0]);
+        $.post('{% url "myforum:new_comment" %}', $(this).serialize(), function(data){
+          if(data.error){
+            console.log(data.response)
+
+            $('div.error').remove();
+            for (var key in data.response) {
+              console.log(key)
+              $('.newcommentform #' + key).after('<div class="error">' + data.response[key] + '</div>');
+            }
+          }
+          else{
+            window.location = ".";
+          }
+        }, 'json');
+      });
+      $('form.editcommentform').submit(function(e){
+        e.preventDefault();
+        console.log($(this).serialize())
+        var str = $(this).find('.mention').val();
+        var pattern = /\B@[a-z0-9_.-]+/gi;
+        var mentioned_users = str.match(pattern);
+        $('<input>', {
+          type: 'hidden',
+          headers: { "X-CSRFToken": token},
+          id: 'mentioned_user',
+          name: 'mentioned_user',
+          value: mentioned_users
+        }).appendTo('form.editcommentform');
+
+        var id = $(this).parent().prev().find('div.name').attr('id');
+        var form = $(this);
+        var formData = new FormData($(this)[0]);
+        $.post('{% url "myforum:new_comment" %}', $(this).serialize(), function(data){
+          if(data.error){
+            console.log(data.response)
+
+            $('div.error').remove();
+            for (var key in data.response) {
+              console.log(key)
+              $('.newcommentform #' + key).after('<div class="error">' + data.response[key] + '</div>');
+            }
+          }
+          else{
+            window.location = ".";
+          }
+        }, 'json');
+      });
+    $('form.edit_comment_form').submit(function(e){
+        e.preventDefault();
+        console.log($(this).serialize())
+        var str = $(this).find('.mention').val();
+        var pattern = /\B@[a-z0-9_.-]+/gi;
+        var mentioned_users = str.match(pattern);
+        $('<input>', {
+          type: 'hidden',
+          headers: { "X-CSRFToken": token},
+          id: 'mentioned_user',
+          name: 'mentioned_user',
+          value: mentioned_users
+        }).appendTo('form.edit_comment_form');
+        url = $(this).attr('data-href')
+        var id = $(this).parent().prev().find('div.name').attr('id');
+        var form = $(this);
+        var formData = new FormData($(this)[0]);
+        $.post(url, $(this).serialize(), function(data){
+          if(data.error){
+            console.log(data.response)
+
+            $('div.error').remove();
+            for (var key in data.response) {
+              console.log(key)
+              $('.edit_comment_form #' + key).after('<div class="error">' + data.response[key] + '</div>');
+            }
+          }
+          else{
+            window.location = ".";
+          }
+        }, 'json');
+      });
+      $('.follow_topic').click(function(e){
+        e.preventDefault();
+        href = $(this).attr('data-href')
+        $.post(href, {'topic.id': $(this).attr('id')}, function(data){
+          $('<input>', {
+          type: 'hidden',
+          headers: { "X-CSRFToken": token},
+          name: 'follow_topic',
+          value: mentioned_users
+        }).appendTo('form.editcommentform');
+          if (data.is_followed){
+            alert("You have succesfully followed the topic and will recieve the topic notifications !!!")
+            $('.follow_topic').text('Followed')
+          }
+          else{
+            $('.follow_topic').text('Follow')
+          }
+        });
+      });
+
+  function comment_users() {
+    $.get("{% url 'myforum:get_mentioned_user' user_id=request.user.id %}", function(response){
+        var users = response.data
+        //comment_mentioned_user(users)
+        $('.mention').suggest('@', {
+          data: users,
+          map: function(user) {
+            return {
+              value: user.username,
+              text: '<strong>'+user.username+'</strong> <small>'+user.fullname+'</small>'
+            }
+          }
+        })
+      }
+    )
+  };
+
+  comment_users();
+function auto_link(link_id){
+  $(link_id).each(function(){
+    $(this).html( $(this).html().replace(/(@[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/gi, '<a href="$1">$1</a> ') );
+    $(this).children().each(function(){
+      var url = "{% url 'users:detail' user.username %}"
+      $(this).attr('href', url);
+    });
+  });
+}
+$(document).ready(function(e){
+  auto_link('.auto_link');
+});
+/* votes up and down */
+{% if request.user.is_authenticated %}
+  $("#down_vote").click(function(e){
+    e.preventDefault();
+    url = $(this).attr("data-href");
+    $down_votes = $("#down_votes")
+    $up_votes = $("#up_votes")
+    $.get(url, function(response){
+      if(response.status == "down"){
+        count = parseInt($down_votes.text())
+        $down_votes.text(count + 1);
+      }
+      else if(response.status == "removed"){
+        count = parseInt($up_votes.text())
+        $up_votes.text(count - 1);
+      }
+    });
+  });
+  $("#up_vote").click(function(e){
+    e.preventDefault();
+    url = $(this).attr("data-href");
+    $down_votes = $("#down_votes")
+    $up_votes = $("#up_votes")
+    $.get(url, function(response){
+      if(response.status == "up"){
+        count = parseInt($up_votes.text())
+        $up_votes.text(count + 1);
+      }
+      else if(response.status == "removed"){
+        count = parseInt($down_votes.text())
+        $down_votes.text(count - 1);
+      }
+    });
+  });
+  /* comment votes */
+  $(".comment_down_vote").click(function(e){
+    e.preventDefault();
+    url = $(this).attr("data-href");
+    $down_votes = $(this).parent().find("span.comment_down_votes_count")
+    $up_votes = $(this).parent().find("span.comment_up_votes_count")
+    console.log($down_votes.text())
+    console.log($up_votes.text())
+    $.get(url, function(response){
+      if(response.status == "down"){
+        count = parseInt($down_votes.text())
+        $down_votes.text(count + 1);
+      }
+      else if(response.status == "removed"){
+        count = parseInt($up_votes.text())
+        $up_votes.text(count - 1);
+      }
+    });
+  });
+  $(".comment_up_vote").click(function(e){
+    e.preventDefault();
+    url = $(this).attr("data-href");
+    $down_votes = $(this).parent().find("span.comment_down_votes_count")
+    $up_votes = $(this).parent().find("span.comment_up_votes_count")
+    console.log($down_votes.text())
+    console.log($up_votes.text())
+    $.get(url, function(response){
+      if(response.status == "up"){
+        count = parseInt($up_votes.text())
+        $up_votes.text(count + 1);
+      }
+      else if(response.status == "removed"){
+        count = parseInt($down_votes.text())
+        $down_votes.text(count - 1);
+      }
+    });
+  });
+{% else %}
+  $("#up_vote, #down_vote, #alert").click(function(){
+    $("#alert").toggleClass("fade");
+  });
+{% endif %}
+</script>
+{% endblock %}

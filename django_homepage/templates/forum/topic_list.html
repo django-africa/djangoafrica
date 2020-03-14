@@ -1,0 +1,46 @@
+{% extends '../base.html' %}
+{% load thumbnail paginate static %}
+
+{% block content %}
+        <div class="row middle_container">
+          {% include 'forum/left_menu.html' %}
+          {% paginate 20 topic_list %}
+          <div class="main_left_container col-md-9 col-md-pull-3 col-sm-9 col-sm-pull-3 col-sm-8 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="topic_container">
+                 <!-- topic_block starts here -->
+                  <h3 class="create_topic_heading">All Topics <span class="pull-right sort_options">{% if request.user.is_authenticated %}<a href="{% url "myforum:new_topic" %}">New Topic</a>{% endif %}</span></h3>
+                 {% for topic in topic_list %}
+                  <div class="topic_block">
+                    <div class="topic_title">
+                    <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
+                    </div>
+                    <div class="topic_options">
+                     <span class="category"><a href="#" class="gaming">{{ topic.category.title }} </a></span><span class="activity">Updated on {{ topic.updated_on }}</span>
+                    <span class="reply"><a href="#"><i class="fa fa-reply"></i>Replies {{ topic.get_all_comments.count }} </a></span>
+                    <!-- <span class="views"><a href="#"><i class="fa fa-eye"></i> Views {{ topic.no_of_views }} </a></span> -->
+                    </div>
+                    <div class="topic_users">
+                      <ul class="users_list">
+                        {% for user in topic.get_topic_users %}
+                        {% comment %} <li><a href="{% url "myforum:user_details" user.user.username %}" title="{{ user.user.username }}"><img src="{% if user.profile_pic %}{% thumbnail user.profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"></a></li> {% endcomment %}
+                        {% endfor %}
+                      </ul>
+                      {% if topic.created_by == request.user %}
+                        {% comment %} <a href="{% url 'myforum:topic_update' topic.slug %}"> Update</a> {% endcomment %}
+                        <a href=""> Update</a>
+                        {% comment %} <a href="{% url 'myforum:delete_topic' topic.slug %}"> delete </a> {% endcomment %}
+                        <a href=""> delete </a>
+                      {% endif %}
+                    </div>
+                     <br clear="all">
+                  </div>
+                {% endfor %}
+                {% show_pages %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}
