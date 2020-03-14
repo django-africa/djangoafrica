@@ -1,8 +1,8 @@
-import pytest
+#import pytest
 
-from django_homepage.users.models import User
+#from django_homepage.users.models import User
 
-pytestmark = pytest.mark.django_db
+#pytestmark = pytest.mark.django_db
 
 
 #def test_user_get_absolute_url(user: User):
