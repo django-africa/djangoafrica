@@ -792,33 +792,24 @@ def get_topic_users(self):
         return users
 
 def get_mentioned_user(request, topic_id):
-    pass
-    # topic = get_object_or_404(Topic, id=topic_id)
-
-    # comment_user_ids = Comment.objects.filter(topic=self).values_list('commented_by', flat=True)
-    # liked_users_ids = UserTopics.objects.filter(topic=self, is_like=True).values_list('user', flat=True)
-    # followed_users = UserTopics.objects.filter(topic=self, is_followed=True).values_list('user', flat=True)
-    # all_users = list(comment_user_ids) + list(liked_users_ids) + list(followed_users) + [self.created_by.id]
-    # users = UserProfile.objects.filter(user_id__in=set(all_users))
-
-    # if request.method == 'GET':
-    #     topic_users = topic.get_topic_users()
-    #     list_data = []
-    #     for user in topic_users:
-    #         data = {}
-    #         data['username'] = user.email.split('@')[0]
-    #         # data['avatar'] = user.profile_pic.url if user.profile_pic else ''
-    #         data['email'] = user.email
-    #         list_data.append(data)
-    # return JsonResponse({'data': list_data})
+    topic = get_object_or_404(Topic, id=topic_id)
+    if request.method == 'GET':
+        topic_users = topic.get_topic_users()
+        list_data = []
+        for user in topic_users:
+            data = {}
+            data['username'] = user.email.split('@')[0]
+            # data['avatar'] = user.profile_pic.url if user.profile_pic else ''
+            data['email'] = user.email
+            list_data.append(data)
+    return JsonResponse({'data': list_data})
 
 
 def comment_mentioned_users_list(data):
-    pass
-    # mentioned_users = data.split(',')
-    # mentioned_users_list = [user.strip('@') for user in mentioned_users]
-    # result = User.objects.filter(username__in=mentioned_users_list)
-    # return result
+    mentioned_users = data.split(',')
+    mentioned_users_list = [user.strip('@') for user in mentioned_users]
+    result = User.objects.filter(username__in=mentioned_users_list)
+    return result
 
 class DashboardView(AdminMixin, TemplateView):
     template_name = 'dashboard/dashboard.html'

@@ -93,14 +93,6 @@ class Profile(models.Model):
         return topics
         # return []
 
-    # def get_topic_users(self):
-    #     comment_user_ids = Comment.objects.filter(commented_by=True).values_list('commented_by', flat=True)
-    #     liked_users_ids = UserTopics.objects.filter(is_like=True).values_list('user', flat=True)
-    #     followed_users = UserTopics.objects.filter(is_followed=True).values_list('user', flat=True)
-    #     all_users = (list(comment_user_ids) + list(liked_users_ids) + list(followed_users) + [self.id])
-    #     users = User.objects.filter(id__in=set(all_users))
-    #     return users
-
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
 

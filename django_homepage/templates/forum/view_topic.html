@@ -452,7 +452,7 @@
       });
 
   function comment_users() {
-    $.get("{% url 'myforum:get_mentioned_user' user_id=request.user.id %}", function(response){
+    $.get("{% url 'myforum:get_mentioned_user' topic.id %}", function(response){
         var users = response.data
         //comment_mentioned_user(users)
         $('.mention').suggest('@', {

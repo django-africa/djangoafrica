@@ -1,5 +1,6 @@
 from django import template
 from djafforum.models import ForumCategory, Tags, Badge, UserTopics
+from django_homepage.users.models import Profile
 from django.db.models import Count
 try:
     from django.contrib.auth import get_user_model
@@ -44,8 +45,8 @@ def is_topic_like(topic_id, user_id):
 
 
 @register.filter
-def user_profile_pic(username):
-    user = User.objects.filter(username=username).first()
+def user_profile_pic(user_id):
+    user = Profile.objects.filter(user_id=user_id).first()
     if user:
         return user.profile_pic
     return ''

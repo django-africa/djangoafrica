@@ -46,7 +46,7 @@
               <li><a href="{% url "account_logout" %}"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
               <li><a class='user_profile_pic' href="{% url "users:detail" request.user.username %}"><img src="
 
-                      {% if request.user.profile|user_profile_pic %}{% thumbnail request.user.profile|user_profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"
+                      {% if request.user.id|user_profile_pic %}{% thumbnail request.user.id|user_profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"
                                                                                                          class="profile_pic"></img></a>
               </li>
             {% endif %}

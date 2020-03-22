@@ -118,6 +118,14 @@ class Topic(models.Model):
     def down_votes_count(self):
         return self.votes.filter(type="D").count()
 
+    def get_topic_users(self):
+        comment_user_ids = Comment.objects.filter(commented_by=True).values_list('commented_by', flat=True)
+        liked_users_ids = UserTopics.objects.filter(is_like=True).values_list('user', flat=True)
+        followed_users = UserTopics.objects.filter(is_followed=True).values_list('user', flat=True)
+        all_users = (list(comment_user_ids) + list(liked_users_ids) + list(followed_users) + [self.id])
+        users = User.objects.filter(id__in=set(all_users))
+        return users
+
     def __str__(self):
         return str(self.title) if self.title else ''
 
