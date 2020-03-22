@@ -782,13 +782,6 @@ class TopicVoteDownView(LoginRequiredMixin, View):
         else:
             status = "neutral"
         return JsonResponse({"status": status})
-
-def get_topic_users(self):
-        comment_user_ids = Comment.objects.filter(topic=self).values_list('commented_by', flat=True)
-        liked_users_ids = UserTopics.objects.filter(topic=self, is_like=True).values_list('user', flat=True)
-        followed_users = UserTopics.objects.filter(topic=self, is_followed=True).values_list('user', flat=True)
-        all_users = list(comment_user_ids) + list(liked_users_ids) + list(followed_users) + [self.created_by.id]
-        users = UserProfile.objects.filter(user_id__in=set(all_users))
         return users
 
 def get_mentioned_user(request, topic_id):
