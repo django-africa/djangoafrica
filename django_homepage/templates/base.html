@@ -2,103 +2,109 @@
 {% load static forum_tags thumbnail %}
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      {% block title %}{% block head_title %}<title>Forum</title>{% endblock head_title %}{% endblock title %}
-      <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta charset="UTF-8">
+  {% block title %}{% block head_title %}<title>Forum</title>{% endblock head_title %}{% endblock title %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      {% compress css %}
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+  {% compress css %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
 
 
-      <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.tagsinput.css' %}" />
-      <link rel="stylesheet" type="text/css" href="{% static 'css/forum.css' %}">
-      <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-suggest.css' %}">
-      {% endcompress %}
-   </head>
-   <body>
-   <header>
-      <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header pad_lr_0 col-md-3 col-sm-3 col-xs-4">
-          <a class="navbar-brand" href="{% url "myforum:topic_list" %}">Forum</a>
-        </div>
-        <div class="col-md-9 col-sm-9 col-xs-8 pad_lr_0 nav_right text-right">
-            <div class="row no_row_margin header_right">
-               <form action="" class="search-form">
-                   <div class="form-group has-feedback">
-                     <label for="search" class="sr-only">Search</label>
-                     <input type="text" class="form-control" name="search" id="search" placeholder="search">
-                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                  </div>
-               </form>
-
-              <ul class="login_block">
-              {% if not request.user.is_authenticated %}
-                <li><a href="{% url "account_login" %}" ><i class="fa fa-sign-in"></i> <span>Sign In</span></a></li>
-                <li><a href="{% url "account_signup" %}"><i class="fa fa-plus-circle"></i> <span>Sign Up</span></a></li>
-              {% else %}
-                <li><a href="{% url "account_change_password" %}"><i class="fa fa-sign-out"></i> <span>Change Password</span></a></li>
-                <li><a href="{% url "account_logout" %}"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
-                <li><a class='user_profile_pic' href="{% url "users:detail" request.user.username %}"><img src="{% if request.user|user_profile_pic %}{% thumbnail request.user|user_profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}" class="profile_pic"></img></a></li>
-              {% endif %}
-              </ul>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.tagsinput.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forum.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-suggest.css' %}">
+  {% endcompress %}
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header pad_lr_0 col-md-3 col-sm-3 col-xs-4">
+        <a class="navbar-brand" href="{% url "myforum:topic_list" %}">Forum</a>
+      </div>
+      <div class="col-md-9 col-sm-9 col-xs-8 pad_lr_0 nav_right text-right">
+        <div class="row no_row_margin header_right">
+          <form action="" class="search-form">
+            <div class="form-group has-feedback">
+              <label for="search" class="sr-only">Search</label>
+              <input type="text" class="form-control" name="search" id="search" placeholder="search">
+              <span class="glyphicon glyphicon-search form-control-feedback"></span>
             </div>
+          </form>
+
+          <ul class="login_block">
+            {% if not request.user.is_authenticated %}
+              <li><a href="{% url "account_login" %}"><i class="fa fa-sign-in"></i> <span>Sign In</span></a></li>
+              <li><a href="{% url "account_signup" %}"><i class="fa fa-plus-circle"></i> <span>Sign Up</span></a></li>
+            {% else %}
+              <li><a href="{% url "account_change_password" %}"><i class="fa fa-sign-out"></i>
+                <span>Change Password</span></a></li>
+              <li><a href="{% url "account_logout" %}"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
+              <li><a class='user_profile_pic' href="{% url "users:detail" request.user.username %}"><img src="
+
+                      {% if request.user.profile|user_profile_pic %}{% thumbnail request.user.profile|user_profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"
+                                                                                                         class="profile_pic"></img></a>
+              </li>
+            {% endif %}
+          </ul>
         </div>
       </div>
-    </nav>
-   </header>
+    </div>
+  </nav>
+</header>
 
 <div class="main_container">
-     <div class="container">
-  {% block content %}
-  {% endblock %}
-    </div>
+  <div class="container">
+    {% block content %}
+    {% endblock %}
   </div>
+</div>
 
-   </body>
-  {% compress js %}
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-   <script src="https://malsup.github.com/jquery.form.js"></script>
-   <!-- Latest compiled and minified JavaScript -->
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+</body>
+{% compress js %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://malsup.github.com/jquery.form.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+          integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 
 
-    <script type="text/javascript" src="{% static 'js/jquery.tagsinput.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/bootstrap-suggest.js' %}"></script>
-   <!-- select2 -->
-   <script>
-    $( document ).ready(function() {
+  <script type="text/javascript" src="{% static 'js/jquery.tagsinput.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/bootstrap-suggest.js' %}"></script>
+  <!-- select2 -->
+  <script>
+    $(document).ready(function () {
       $(".select2").select2({
         tags: true
       });
       $(".js-example-basic-single, .js-example-basic-single1").select2();
     });
-   </script>
+  </script>
 
-   <!-- tags script -->
+  <!-- tags script -->
   <script type="text/javascript">
-    $(function() {
+    $(function () {
       $('#id_tags').tagsInput({
         width: 'auto',
-        onChange: function(elem, elem_tags)
-        {
-          var languages = ['php','ruby','javascript'];
-          $('.tag', elem_tags).each(function()
-          {
-            if($(this).text().search(new RegExp('\\b(' + languages.join('|') + ')\\b')) >= 0)
+        onChange: function (elem, elem_tags) {
+          var languages = ['php', 'ruby', 'javascript'];
+          $('.tag', elem_tags).each(function () {
+            if ($(this).text().search(new RegExp('\\b(' + languages.join('|') + ')\\b')) >= 0)
               $(this).css('background-color', 'yellow');
           });
         }
       });
     });
   </script>
-    {% block extra_js %}
+  {% block extra_js %}
 
-    {% endblock %}
+  {% endblock %}
 
-   {% endcompress %}
+{% endcompress %}
 </html>

@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView, DetailView, RedirectView, UpdateView, View
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
@@ -115,7 +115,7 @@ class UserProfilePicView(LoginRequiredMixin, View):
     model = User
 
     def get_object(self):
-        return get_object_or_404(UserProfile)
+        return get_object_or_404(Profile)
 
     def get_success_url(self):
         return redirect(reverse("users:detail", kwargs={"username": self.username}))

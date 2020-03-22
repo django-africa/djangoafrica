@@ -1,11 +1,16 @@
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-from django.db.models import CharField
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
-from djafforum.models import Topic, Comment, Badge, Timeline, Tags, ForumCategory
 import hashlib
 from datetime import datetime
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import CharField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
+
+from djafforum.models import Topic, Comment, Badge, Timeline, Tags, ForumCategory
 
 STATUS = (
     ('Draft', 'Draft'),
@@ -18,6 +23,7 @@ USER_ROLES = (
     ('Publisher', 'Publisher'),
 )
 
+
 def img_url(self, filename):
     hash_ = hashlib.md5()
     hash_.update(
@@ -25,8 +31,9 @@ def img_url(self, filename):
     file_hash = hash_.hexdigest()
     return "%s%s/%s" % (self.file_prepend, file_hash, filename)
 
-class User(AbstractUser):
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # First Name and Last Name do not cover name patterns
     # around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
@@ -34,8 +41,7 @@ class User(AbstractUser):
     used_votes = models.IntegerField(default='0')
     user_roles = models.CharField(choices=USER_ROLES, max_length=10, blank=True)
     # badges = models.ManyToManyField(Badge)
-    profile_pic = models.FileField(
-        max_length=500, null=True, upload_to=img_url, blank=True)
+    profile_pic = models.FileField(max_length=500, null=True, upload_to=img_url, blank=True)
     send_mailnotifications = models.BooleanField(default=False, blank=True)
 
     # need to add social details for a user if we implement socail login
@@ -97,6 +103,18 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
+
+    class Meta:
+        db_table = 'profile'
+
+
+# Auto-create Profile model on User model creation
+@receiver(post_save, sender=get_user_model())
+def update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()
+
 
 class UserTopics(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='users_topic')
