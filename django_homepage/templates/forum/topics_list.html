@@ -1,6 +1,10 @@
 {% load endless %}
-{% paginate topic_list %}
 
+{% if topic_list %}
+{% paginate topic_list %}
+{% endif %}
+
+{% if toic_list  %}
 {% for topic in topic_list %}
   <div class="topic_block">
     <div class="topic_title">
@@ -28,3 +32,4 @@
 
 <div class="pagination">
     {% show_pages %}</div>
+{% endif %}
