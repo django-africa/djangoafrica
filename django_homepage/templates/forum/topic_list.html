@@ -1,4 +1,6 @@
 {% extends '../base.html' %}
+{% if  topic_list %}
+
 {% load thumbnail paginate static %}
 
 {% block content %}
@@ -42,3 +44,4 @@
           </div>
         </div>
 {% endblock %}
+{% endif %}
