@@ -67,4 +67,10 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
 
-
+DATABASES = {
+    "default":
+        {'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': os.path.join(ROOT_DIR, 'db.sqlite3')
+         }
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True

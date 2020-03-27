@@ -1,30 +1,49 @@
-from django.contrib.auth import get_user_model, forms
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model, forms as uforms
+from django import forms
+from django.template.defaultfilters import slugify
+from django_homepage.users.models import Profile, Badge
 
 User = get_user_model()
 
 
-class UserChangeForm(forms.UserChangeForm):
-    class Meta(forms.UserChangeForm.Meta):
+class UserChangeForm(uforms.UserChangeForm):
+    class Meta(uforms.UserChangeForm.Meta):
         model = User
 
-
-class UserCreationForm(forms.UserCreationForm):
-
-    error_message = forms.UserCreationForm.error_messages.update(
-        {"duplicate_username": _("This username is not available.")}
-    )
-
-    class Meta(forms.UserCreationForm.Meta):
+class PasswordChangeForm(uforms.PasswordChangeForm):
+    class Meta:
         model = User
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
+class AuthenticationForm(uforms.AuthenticationForm):
+    class Meta:
+        model = User
 
-        try:
-            User.objects.get(username=username)
-        except User.DoesNotExist:
-            return username
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['badges']
 
-        raise ValidationError(self.error_messages["duplicate_username"])
+class BadgeForm(forms.ModelForm):
+    class Meta:
+        model = Badge
+        exclude = ('slug',)
+
+    def clean_title(self):
+        if Badge.objects.filter(slug=slugify(self.cleaned_data['title'])).exclude(id=self.instance.id):
+            raise forms.ValidationError('Badge with this Name already exists.')
+
+        return self.cleaned_data['title']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(BadgeForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(BadgeForm, self).save(commit=False)
+        instance.title = self.cleaned_data['title']
+        if not self.instance.id:
+            instance.slug = slugify(self.cleaned_data['title'])
+        if commit:
+            instance.save()
+        return instance
+

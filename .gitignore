@@ -286,3 +286,8 @@ django_homepage/media/
 .pytest_cache/
 
 
+/db.sqlite3
+
+.idea
+
+.vscode

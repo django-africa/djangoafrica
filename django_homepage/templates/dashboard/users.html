@@ -36,8 +36,8 @@
                           <td>{{ forloop.counter }}</td>
                           <td>{{ user.email }}</td>
                           <td>{{ user.username }}</td>
-                          <td>{{ user.used_votes }}({{user.get_no_of_up_votes}}/{{user.get_no_of_down_votes}})</td>
-                          <td><a href="{% url "users:detail" user.id %}" class=""><i class="fa fa-eye view"></i></a><a href="{% url "myforum:edit_user" user.id %}" class=""><i class="fa fa-edit edit"></i></a><a href="#" data-href="{% url "myforum:user_status" user.id %}" class="user_status" title='{% if user.user.is_active %}InActive{%  else %}Active{% endif %}'>{% if user.user.is_active %}<i class="fa fa-times edit"></i>{% else %}<i class="fa fa-check edit"></i>{% endif %}</a><a href="#" data-href="{% url "myforum:delete_user" user.id %}" class="delete-user"><i class="fa fa-trash delete"></i></a></td>
+                          <td>({{user.get_no_of_up_votes}}/{{user.get_no_of_down_votes}})</td>
+                          <td><a href="{% url "users:view_profile" user.id user.username %}" class=""><i class="fa fa-eye view"></i></a><a href="{% url "myforum:edit_user" user.id %}" class=""><i class="fa fa-edit edit"></i></a><a href="#" data-href="{% url "myforum:user_status" user.id %}" class="user_status" title='{% if user.is_active %}InActive{%  else %}Active{% endif %}'>{% if user.is_active %}<i class="fa fa-times edit"></i>{% else %}<i class="fa fa-check edit"></i>{% endif %}</a><a href="#" data-href="{% url "myforum:delete_user" user.id %}" class="delete-user"><i class="fa fa-trash delete"></i></a></td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -75,14 +75,25 @@
       href = $(this).attr('data-href');
       if (!confirm('Do you want to Change the User Status?'))
         return;
-      $.post(href, $("form#jobform").serialize(), function(data) {
-      if (data.error) {
-        alert(data.response);
-      } else {
-        alert("User Status Changed Successfully")
-        window.location = '.';
-      }
-    }, 'json');
+      var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      var request = new Request(
+          /* URL */
+          href,
+          {headers: {'X-CSRFToken': csrftoken}}
+      );
+      fetch(request, {
+          method: 'POST',
+          mode: 'same-origin'  // Do not send CSRF token to another domain.
+      }).then(function(response) {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          } else {
+                alert("User Status Successfully")
+                location.asign('.');
+              }
+          return response
+        });
   });
 
 </script>

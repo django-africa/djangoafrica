@@ -2,7 +2,6 @@ from django.contrib import admin
 from .import models
 
 admin.site.register(models.Tags)
-admin.site.register(models.Badge)
 admin.site.register(models.ForumCategory)
 admin.site.register(models.Vote)
 admin.site.register(models.Topic)

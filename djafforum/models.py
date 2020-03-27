@@ -1,16 +1,16 @@
 # from django.contrib.auth import get_user_model
-from django.db import models
-from django.conf import settings
-from itertools import chain
-from django.template.defaultfilters import slugify
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 import hashlib
 from datetime import datetime
-from ckeditor.fields import RichTextField
-from ckeditor_uploader.fields import RichTextUploadingField
 
-User = settings.AUTH_USER_MODEL
+from ckeditor_uploader.fields import RichTextUploadingField
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.template.defaultfilters import slugify
+
+
+User = get_user_model()
 
 STATUS = (
     ('Draft', 'Draft'),
@@ -23,12 +23,14 @@ USER_ROLES = (
     ('Publisher', 'Publisher'),
 )
 
+
 def img_url(self, filename):
     hash_ = hashlib.md5()
     hash_.update(
         str(filename).encode('utf-8') + str(datetime.now()).encode('utf-8'))
     file_hash = hash_.hexdigest()
     return "%s%s/%s" % (self.file_prepend, file_hash, filename)
+
 
 class Vote(models.Model):
     TYPES = (
@@ -41,6 +43,7 @@ class Vote(models.Model):
 
     def __str__(self):
         return self.user
+
 
 class ForumCategory(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='category_by')
@@ -59,6 +62,8 @@ class ForumCategory(models.Model):
 
     def __str__(self):
         return self.title
+
+
 # tags created for topic
 class Tags(models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -70,22 +75,12 @@ class Tags(models.Model):
 
 
 
-# Badges created for topic
-class Badge(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=50, unique=True)
-
-    def get_users(self):
-        user_profile = User.objects.filter(badges__in=[self])
-        return user_profile
-
-
 class Topic(models.Model):
     title = models.CharField(max_length=2000)
     description = RichTextUploadingField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_topic')
     status = models.CharField(choices=STATUS, max_length=10)
-    category = models.ForeignKey(ForumCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(ForumCategory, on_delete=models.CASCADE, related_name='topic_category')
     created_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
     no_of_views = models.IntegerField(default='0')
@@ -106,15 +101,23 @@ class Topic(models.Model):
         comments = Comment.objects.filter(topic=self).order_by('-updated_on').first()
         return comments
 
-    def get_total_of_votes(self):
-        no_of_votes = up_votes_count(self) + down_votes_count(self)
-        return no_of_votes
-
     def up_votes_count(self):
         return self.votes.filter(type="U").count()
 
     def down_votes_count(self):
         return self.votes.filter(type="D").count()
+
+    def get_total_of_votes(self):
+        no_of_votes = self.up_votes_count() + self.down_votes_count()
+        return no_of_votes
+
+    def get_topic_users(self):
+        comment_user_ids = Comment.objects.filter(commented_by=True).values_list('commented_by', flat=True)
+        liked_users_ids = UserTopics.objects.filter(is_like=True).values_list('user', flat=True)
+        followed_users = UserTopics.objects.filter(is_followed=True).values_list('user', flat=True)
+        all_users = (list(comment_user_ids) + list(liked_users_ids) + list(followed_users) + [self.id])
+        users = User.objects.filter(id__in=set(all_users))
+        return users
 
     def __str__(self):
         return str(self.title) if self.title else ''
@@ -123,9 +126,10 @@ class Topic(models.Model):
         self.slug = slugify(self.title)
         return super(Topic, self).save(*args, **kwargs)
 
+
 class Comment(models.Model):
     comment = models.TextField(null=True, blank=True)
-    commented_by = models.ForeignKey(User, related_name="commented_by", on_delete=models.CASCADE)
+    commented_by = models.ForeignKey(User, related_name="commented_by", on_delete=models.CASCADE, null=True, blank=True)
     topic = models.ForeignKey(Topic, related_name="topic_comments", on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now_add=True)
@@ -143,12 +147,14 @@ class Comment(models.Model):
     def down_votes_count(self):
         return self.votes.filter(type="D").count()
 
+    def __str__(self):
+        return str(self.commented_by) if self.commented_by else ''
 
 
 # user followed topics
 class UserTopics(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE )
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     is_followed = models.BooleanField(default=False)
     followed_on = models.DateField(null=True, blank=True)
     no_of_votes = models.IntegerField(default='0')
