@@ -7,10 +7,12 @@
                 </div>
                 <div class="panel-body off">
                   <ul class="category_items">
+                  {% if get_categories %}
                     {% get_categories as categories %}
                     {% for category in categories %}
                     <li class="category_item"><a href="{% url "myforum:forum_category_detail" category.slug %}" class="disclosure" style="background:{{category.color}}!important;"> {{ category.title }} </a></li>
                     {% endfor %}
+                  {% endif %}
                     <li class="category_item"><a href="{% url "myforum:forum_categories" %}" class="disclosure"> All </a></li>
                   </ul>
                 </div>
