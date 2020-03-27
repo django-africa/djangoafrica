@@ -289,3 +289,5 @@ django_homepage/media/
 /db.sqlite3
 
 .idea
+
+.vscode
