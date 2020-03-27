@@ -1,7 +1,9 @@
 from django import template
-from djafforum.models import ForumCategory, Tags, Badge, UserTopics
-from django_homepage.users.models import Profile
 from django.db.models import Count
+
+from djafforum.models import ForumCategory, Tags
+from django_homepage.users.models import Profile, Badge, UserTopics
+
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -13,7 +15,7 @@ register = template.Library()
 
 @register.simple_tag()
 def get_categories():
-    all_categories = ForumCategory.objects.filter(is_active=True).annotate(num_topics=Count('topic')).order_by('-num_topics')[:10]
+    all_categories = ForumCategory.objects.filter(is_active=True).annotate(num_topics=Count('topic_category')).order_by('-num_topics')[:10]
     return all_categories
 
 

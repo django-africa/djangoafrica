@@ -8,6 +8,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import slugify
+
+
 User = get_user_model()
 
 STATUS = (
@@ -72,22 +74,13 @@ class Tags(models.Model):
         return topics
 
 
-# Badges created for topic
-class Badge(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=50, unique=True)
-
-    def get_users(self):
-        user_profile = User.objects.filter(badges__in=[self])
-        return user_profile
-
 
 class Topic(models.Model):
     title = models.CharField(max_length=2000)
     description = RichTextUploadingField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_topic')
     status = models.CharField(choices=STATUS, max_length=10)
-    category = models.ForeignKey(ForumCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(ForumCategory, on_delete=models.CASCADE, related_name='topic_category')
     created_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
     no_of_views = models.IntegerField(default='0')
@@ -108,15 +101,15 @@ class Topic(models.Model):
         comments = Comment.objects.filter(topic=self).order_by('-updated_on').first()
         return comments
 
-    def get_total_of_votes(self):
-        no_of_votes = self.up_votes_count() + self.down_votes_count()
-        return no_of_votes
-
     def up_votes_count(self):
         return self.votes.filter(type="U").count()
 
     def down_votes_count(self):
         return self.votes.filter(type="D").count()
+
+    def get_total_of_votes(self):
+        no_of_votes = self.up_votes_count() + self.down_votes_count()
+        return no_of_votes
 
     def get_topic_users(self):
         comment_user_ids = Comment.objects.filter(commented_by=True).values_list('commented_by', flat=True)
@@ -136,7 +129,7 @@ class Topic(models.Model):
 
 class Comment(models.Model):
     comment = models.TextField(null=True, blank=True)
-    commented_by = models.ForeignKey(User, related_name="commented_by", on_delete=models.CASCADE)
+    commented_by = models.ForeignKey(User, related_name="commented_by", on_delete=models.CASCADE, null=True, blank=True)
     topic = models.ForeignKey(Topic, related_name="topic_comments", on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now_add=True)
@@ -153,6 +146,9 @@ class Comment(models.Model):
 
     def down_votes_count(self):
         return self.votes.filter(type="D").count()
+
+    def __str__(self):
+        return str(self.commented_by) if self.commented_by else ''
 
 
 # user followed topics

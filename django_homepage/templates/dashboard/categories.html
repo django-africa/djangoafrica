@@ -81,20 +81,31 @@
 {% endblock %}
 {% block extra_js %}
 <script type="text/javascript">
+
   $('.delete-category').click(function(e){
   e.preventDefault();
   href = $(this).attr('data-href');
   if (!confirm('Do you want to delete Category?'))
     return;
-  $.post(href, $("form#jobform").serialize(), function(data) {
-          if (data.error) {
-            alert(data.response);
-          } else {
-            alert("Category Deleted Successfully")
-            window.location = '.';
-          }
-        }, 'json');
-  });
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+  var request = new Request(
+      /* URL */
+      href,
+      {headers: {'X-CSRFToken': csrftoken}}
+  );
+  fetch(request, {
+      method: 'POST',
+      mode: 'same-origin'  // Do not send CSRF token to another domain.
+  }).then(function(response) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      } else {
+            alert("Category Deleted Successfully")
+            location.asign('{% url 'myforum:categories' %}');
+          }
+      return response
+    });
+  });
 </script>
 {% endblock %}

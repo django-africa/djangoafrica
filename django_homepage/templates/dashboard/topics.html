@@ -43,7 +43,7 @@
           <td>{{ topic.created_by }}</td>
           <td>{{ topic.no_of_likes }}</td>
           <td>{{ topic.get_topic_users|length }}</td>
-          <td>{{ topic.no_of_votes }}</td>
+          <td>{{ topic.get_total_of_votes }}</td>
           <td>{{ topic.topic_comments.all|length }}</td>
           <td><a href="{% url "myforum:topic_detail" topic.slug %}" class=""><i class="fa fa-eye view"></i></a>
             <a data-href="{% url "myforum:topic_status" topic.slug %}" class="topic-status" title="{% ifequal topic.status 'Draft' %}Draft{% endifequal %}{% ifequal topic.status 'Published' %}Published{% endifequal %}{% ifequal topic.status 'Disabled' %}Disabled{% endifequal %}">{% ifequal topic.status 'Draft' %}<i class='fa fa-floppy-o draft view'></i>{% endifequal %}{% ifequal topic.status 'Published' %}<i class='fa fa-newspaper-o published edit'></i>{% endifequal %}{% ifequal topic.status 'Disabled' %}<i class='fa fa-exclamation-triangle disabled'></i>{% endifequal %}</a>
@@ -66,44 +66,32 @@
 {% endblock %}
 {% block extra_js %}
 <script type="text/javascript">
-
-$.ajaxSetup({
-     beforeSend: function(xhr, settings) {
-         function getCookie(name) {
-             var cookieValue = null;
-             if (document.cookie && document.cookie != '') {
-                 var cookies = document.cookie.split(';');
-                 for (var i = 0; i < cookies.length; i++) {
-                     var cookie = jQuery.trim(cookies[i]);
-                     // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-         }
-         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-             // Only send the token to relative URLs i.e. locally.
-             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-         }
-     }
-});
-
   $('.delete-topic').click(function(e){
   e.preventDefault();
   href = $(this).attr('data-href');
+
   if (!confirm('Do you want to delete Topic?'))
     return;
-  $.post(href, $("form#jobform").serialize(), function(data) {
-      if (data.error) {
-        alert(data.response);
+
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  var request = new Request(
+      /* URL */
+      href,
+      {headers: {'X-CSRFToken': csrftoken}}
+  );
+  fetch(request, {
+      method: 'POST',
+      mode: 'same-origin'  // Do not send CSRF token to another domain.
+  }).then(function(response) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       } else {
-        alert("Topic Deleted Successfully")
-        window.location = '.';
-      }
-    }, 'json');
+            alert("Topic Deleted Successfully")
+            location.asign('.');
+          }
+      return response
+    });
   });
 
   $('.topic-status').click(function(e){
@@ -111,15 +99,26 @@ $.ajaxSetup({
   href = $(this).attr('data-href');
   if (!confirm('Do you want to change the status of topic?'))
     return;
-  $.post(href, $("form#jobform").serialize(), function(data) {
-      if (data.error) {
-        alert(data.response);
-      } else {
-        alert("Topic Status Changed Successfully")
-        window.location = '.';
-      }
-    }, 'json');
-  });
 
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  var request = new Request(
+      /* URL */
+      href,
+      {headers: {'X-CSRFToken': csrftoken}}
+  );
+  fetch(request, {
+      method: 'POST',
+      mode: 'same-origin'  // Do not send CSRF token to another domain.
+  }).then(function(response) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      } else {
+            alert("Topic Status Changed Successfully")
+            location.asign('.');
+          }
+      return response
+    });
+  });
 </script>
 {% endblock %}

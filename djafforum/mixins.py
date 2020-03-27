@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import logout
-from .models import Topic
+from djafforum.models import Topic
 
 
 class AdminMixin(object):

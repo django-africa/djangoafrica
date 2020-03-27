@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from djafforum import views
 
 app_name = "myforum"
 urlpatterns = [

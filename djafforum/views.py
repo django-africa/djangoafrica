@@ -1,21 +1,20 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, View, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
 
-from .models import *
-from .forms import *
-from .mixins import *
-from users.forms import UserChangeForm
+
+from djafforum.models import *
+from djafforum.forms import *
+from djafforum.mixins import *
+from django_homepage.users.forms import UserChangeForm, ProfileForm, BadgeForm, PasswordChangeForm, AuthenticationForm
+from django_homepage.users.models import Profile, UserTopics, Badge
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
@@ -33,10 +32,10 @@ def timeline_activity(user, content_object, namespace, event_type):
 def getout(request):
     if not request.user.is_superuser:
         logout(request)
-        return HttpResponseRedirect(reverse('myforum:topic_list'))
+        return HttpResponseRedirect(reverse_lazy('myforum:topic_list'))
     else:
         logout(request)
-        return HttpResponseRedirect(reverse('myforum:dashboard'))
+        return HttpResponseRedirect(reverse_lazy('myforum:dashboard'))
 
 class TopicUpdateView(CanUpdateTopicMixin, UpdateView):
     model = Topic
@@ -190,7 +189,7 @@ class ForumCategoryView(ListView):
         else:
             query = Q(status="Published")
         category = get_object_or_404(ForumCategory, slug=self.kwargs.get("slug"))
-        topics = category.topic_set.filter(query)
+        topics = category.topic_category.filter(query)
         return topics
 
 
@@ -229,7 +228,7 @@ class CategoryAdd(AdminMixin, CreateView):
     model = ForumCategory
     form_class = CategoryForm
     template_name = "dashboard/category_add.html"
-    success_url = reverse_lazy('myforum:dashboard')
+    success_url = reverse_lazy('myforum:categories')
 
     def get_form_kwargs(self):
         kwargs = super(CategoryAdd, self).get_form_kwargs()
@@ -241,10 +240,10 @@ class CategoryAdd(AdminMixin, CreateView):
         if self.request.POST.get('parent'):
             menu.parent_id = self.request.POST.get('parent')
             menu.save()
-        return reverse_lazy('myforum:topic_list')
+        return reverse_lazy('myforum:categories')
 
     def get_success_url(self):
-        return redirect(reverse('myforum:categories'))
+        return reverse('myforum:categories')
 
     def get_context_data(self, **kwargs):
         context = super(CategoryAdd, self).get_context_data(**kwargs)
@@ -259,13 +258,13 @@ class CategoryDelete(AdminMixin, DeleteView):
     model = ForumCategory
     slug_field = 'slug'
     template_name = "dashboard/categories.html"
-    success_url = reverse_lazy('myforum:dashboard')
+    success_url = reverse_lazy('myforum:categories')
 
     def get_object(self):
         return get_object_or_404(ForumCategory, slug=self.kwargs['slug'])
 
     def get_success_url(self):
-        return redirect(reverse('myforum:categories'))
+        return reverse('myforum:categories')
 
     def post(self, request, *args, **kwargs):
         category = self.get_object()
@@ -292,10 +291,10 @@ class CategoryEdit(AdminMixin, UpdateView):
         if self.request.POST.get('parent'):
             menu.parent_id = self.request.POST.get('parent')
             menu.save()
-        return reverse_lazy('myforum:categories')
+        return HttpResponseRedirect('myforum:categories')
 
     def get_success_url(self):
-        return redirect(reverse('myforum:categories'))
+        return reverse_lazy('myforum:categories')
 
     def get_context_data(self, **kwargs):
         context = super(CategoryEdit, self).get_context_data(**kwargs)
@@ -304,6 +303,20 @@ class CategoryEdit(AdminMixin, UpdateView):
         context['form'] = form
         context['menus'] = menus
         return context
+
+    def post(self, request, *args, **kwargs):
+        category = self.model.objects.get(slug=kwargs['slug'])
+
+        if request.POST.get('is_active') == 'True':
+            category = category.is_active = False
+        if request.POST.get('is_votable') == 'True':
+            category = category.is_active = False
+        if request.POST.get('is_active') == 'False':
+            category = category.is_active = True
+        if request.POST.get('is_votable') == 'False':
+            category = category.is_active = True
+        return reverse_lazy('myforum:categories')
+
 
 class DashboardTopicList(AdminMixin, ListView):
     template_name = 'dashboard/topics.html'
@@ -341,11 +354,10 @@ class BadgeAdd(AdminMixin, CreateView):
 
     def form_valid(self, form):
         form.save()
-        data = {'error': False, 'response': 'Successfully Created Badge'}
-        return JsonResponse(data)
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return redirect(reverse('myforum:badges'))
+        return reverse('myforum:badges')
 
     def form_invalid(self, form):
         return JsonResponse({'error': True, 'response': form.errors})
@@ -355,6 +367,13 @@ class BadgeAdd(AdminMixin, CreateView):
         form = BadgeForm(self.request.GET)
         context['form'] = form
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class BadgeDelete(AdminMixin, DeleteView):
@@ -367,7 +386,7 @@ class BadgeDelete(AdminMixin, DeleteView):
         return get_object_or_404(Badge, slug=self.kwargs['slug'])
 
     def get_success_url(self):
-        return redirect(reverse('myforum:badges'))
+        return reverse('myforum:badges')
 
     def post(self, request, *args, **kwargs):
         badge = self.get_object()
@@ -534,7 +553,7 @@ class CommentAdd(LoginRequiredMixin, CreateView):
         return JsonResponse(data)
 
     def get_success_url(self):
-        return redirect(reverse('myforum:signup'))
+        return redirect(reverse('myforum:view_topic'))
 
     def form_invalid(self, form):
         return JsonResponse({'error': True, 'response': form.errors})
@@ -548,7 +567,7 @@ class CommentAdd(LoginRequiredMixin, CreateView):
 
 class CommentEdit(LoginRequiredMixin, UpdateView):
     model = Comment
-    template_name = "dashboard/edit_user.html"
+    #template_name = "dashboard/edit_user.html"
     form_class = CommentForm
     slug_field = 'slug'
 
@@ -706,7 +725,6 @@ class TopicStatus(AdminMixin, View):
     def get_object(self):
         return get_object_or_404(Topic, slug=self.kwargs['slug'])
 
-    @csrf_protect
     def post(self, request, *args, **kwargs):
         topic = self.get_object()
         if topic.status == 'Draft':
@@ -783,7 +801,6 @@ class TopicVoteDownView(LoginRequiredMixin, View):
         else:
             status = "neutral"
         return JsonResponse({"status": status})
-        return users
 
 def get_mentioned_user(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
@@ -839,39 +856,17 @@ class LoginView(FormView):
     def form_invalid(self, form):
         return JsonResponse({'error': True, 'response': form.errors})
 
-class UserList(AdminMixin, ListView):
-    model = User
-    template_name = 'dashboard/users.html'
-    context_object_name = 'users_list'
-    queryset = User.objects.filter()
-
-    def get_context_data(self, **kwargs):
-        context = super(UserList, self).get_context_data(**kwargs)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        users_list = self.model.objects.all()
-        if request.POST.get('search_text', ''):
-            users_list = list(set(users_list.filter(
-                user__email__icontains=request.POST.get('search_text')
-            ) | users_list.filter(
-                user__username__icontains=request.POST.get('search_text')
-            )))
-        per_page = request.POST.get("filter_per_page") if request.POST.get(
-            "filter_per_page") else 10
-        return render(request, self.template_name, {'users_list': users_list,
-                                                    "per_page": per_page})
 
 class DashboardUserDelete(AdminMixin, DeleteView):
     model = User
     template_name = "dashboard/topic.html"
-    slug_name = "user_id"
+    slug_name = "id"
 
     def get_success_url(self):
-        return redirect(reverse('myforum:users'))
+        return reversereverse('myforum:users')
 
     def get_object(self):
-        return get_object_or_404(User, id=self.kwargs['user_id'])
+        return get_object_or_404(User, id=self.kwargs['id'])
 
     def post(self, request, *args, **kwargs):
         user = self.get_object()
@@ -883,7 +878,7 @@ class UserStatus(AdminMixin, View):
     slug_name = "user_id"
 
     def get_success_url(self):
-        return redirect(reverse('myforum:users'))
+        return reverse('myforum:users')
 
     def get_object(self):
         return get_object_or_404(User, id=self.kwargs['user_id'])
@@ -908,8 +903,8 @@ class UserDetail(AdminMixin, TemplateView):
         context = super(UserDetail, self).get_context_data(**kwargs)
         context['user'] = self.get_object()
         context['user_profile'] = get_object_or_404(
-            User, user=self.get_object())
-        user_topics = UserTopics.objects.filter(user=self.get_object())
+            Profile, id=self.get_object())
+        user_topics = UserTopics.objects.filter(user_id=self.get_object())
         context['user_topics'] = user_topics
         context['user_liked_topics'] = user_topics.filter(is_like=True)
         context['user_followed_topics'] = user_topics.filter(is_followed=True)
@@ -918,17 +913,17 @@ class UserDetail(AdminMixin, TemplateView):
         return context
 
 class DashboardUserEdit(AdminMixin, UpdateView):
-    model = User
+    model = Profile
     template_name = "dashboard/edit_user.html"
-    form_class = UserChangeForm
+    form_class = ProfileForm
     context_object_name = 'user_profile'
 
     def get_object(self):
-        return get_object_or_404(User, user_id=self.kwargs['user_id'])
+        return get_object_or_404(Profile, user_id=self.kwargs['user_id'])
 
     def get_form_kwargs(self):
         kwargs = super(DashboardUserEdit, self).get_form_kwargs()
-        kwargs.update({'user': self.request.user})
+        # kwargs.update({'user': self.request.user})
         return kwargs
 
     def form_valid(self, form):
@@ -946,7 +941,7 @@ class DashboardUserEdit(AdminMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardUserEdit, self).get_context_data(**kwargs)
-        form = UserProfileForm(self.request.GET)
+        form = ProfileForm(self.request.GET)
         badges = Badge.objects.filter()
         context['form'] = form
         context['badges'] = badges

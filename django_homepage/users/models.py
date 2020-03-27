@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from djafforum.models import Topic, Comment, Badge, Timeline, Tags, ForumCategory
+from djafforum.models import Topic, Timeline, Tags, ForumCategory
 
 STATUS = (
     ('Draft', 'Draft'),
@@ -31,6 +31,14 @@ def img_url(self, filename):
     file_hash = hash_.hexdigest()
     return "%s%s/%s" % (self.file_prepend, file_hash, filename)
 
+class Badge(models.Model):
+    title = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def get_users(self):
+        user_profile = Profile.objects.filter(badges__in=[self])
+        return user_profile
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -40,42 +48,42 @@ class Profile(models.Model):
     file_prepend = "forum_user/profilepics/"
     used_votes = models.IntegerField(default='0')
     user_roles = models.CharField(choices=USER_ROLES, max_length=10, blank=True)
-    # badges = models.ManyToManyField(Badge)
+    badges = models.ManyToManyField(Badge)
     profile_pic = models.FileField(max_length=500, null=True, upload_to=img_url, blank=True)
     send_mailnotifications = models.BooleanField(default=False, blank=True)
 
     # need to add social details for a user if we implement socail login
 
     def get_no_of_up_votes(self):
-        user_topics = UserTopics.objects.filter(user=self.id)
+        user_topics = UserTopics.objects.filter(user=self.user)
         votes = 0
         for topic in user_topics:
             votes += topic.no_of_votes
         return votes
 
     def get_no_of_down_votes(self):
-        user_topics = UserTopics.objects.filter(user=self.id)
+        user_topics = UserTopics.objects.filter(user=self.user)
         votes = 0
         for topic in user_topics:
             votes += topic.no_of_down_votes
         return votes
 
     def get_topics(self):
-        topics = Topic.objects.filter(created_by=self.id)
+        topics = Topic.objects.filter(created_by=self.user)
         return topics
 
     def get_followed_topics(self):
-        topics = UserTopics.objects.filter(user=self.id, is_followed=True)
+        topics = UserTopics.objects.filter(user=self.user, is_followed=True)
         topics = Topic.objects.filter(id__in=topics.values_list('topic', flat=True))
         return topics
 
     def get_liked_topics(self):
-        topics = UserTopics.objects.filter(user=self.id, is_like=True)
+        topics = UserTopics.objects.filter(user=self.user, is_like=True)
         topics = Topic.objects.filter(id__in=topics.values_list('topic', flat=True))
         return topics
 
     def get_timeline(self):
-        timeline = Timeline.objects.filter(user=self.id).order_by('-created_on')
+        timeline = Timeline.objects.filter(user=self.user).order_by('-created_on')
         return timeline
 
     def get_user_topic_tags(self):
@@ -94,7 +102,7 @@ class Profile(models.Model):
         # return []
 
     def get_absolute_url(self):
-        return reverse("users:detail", kwargs={"username": self.username})
+        return reverse("users:view_profile", kwargs={"user_id": self.user.id, "username": self.user.username})
 
     class Meta:
         db_table = 'profile'
@@ -109,10 +117,11 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 
 class UserTopics(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='users_topic')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile_user')
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='user_topic')
     is_followed = models.BooleanField(default=False)
     followed_on = models.DateField(null=True, blank=True)
     no_of_votes = models.IntegerField(default='0')
     no_of_down_votes = models.IntegerField(default='0')
     is_like = models.BooleanField(default=False)
+
