@@ -1,11 +1,12 @@
 {% extends '../base.html' %}
-{% if  topic_list %}
+
 
 {% load thumbnail paginate static %}
 
 {% block content %}
         <div class="row middle_container">
           {% include 'forum/left_menu.html' %}
+          {% if topic_list %}
           {% paginate 20 topic_list %}
           <div class="main_left_container col-md-9 col-md-pull-3 col-sm-9 col-sm-pull-3 col-sm-8 col-xs-12">
             <div class="panel panel-default">
