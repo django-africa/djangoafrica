@@ -64,9 +64,9 @@
                       <div class="clearfix"></div>
                     </ul>
                     <ul>
-                      <li><a href="{% url 'users:detail' request.user.username %}"><img src="{% if topic.created_by|user_profile_pic %}{% thumbnail topic.created_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Created By<small>{{ topic.created_by.username }}, {{ topic.created_on }}</small></span></a></li>
+                      <li><a href="{% url 'users:view_profile' topic.created_by.id topic.created_by.username %}"><img src="{% if topic.created_by|user_profile_pic %}{% thumbnail topic.created_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Created By<small>{{ topic.created_by.username }}, {{ topic.created_on }}</small></span></a></li>
                       {% if topic.get_last_comment %}
-                      <li><a href="{% url 'users:detail' topic.get_last_comment.commented_by.username %}"><img src="{% if topic.get_last_comment.commented_by|user_profile_pic %}{% thumbnail topic.get_last_comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Last Replied By<small>{{ topic.get_last_comment.commented_by.username }}, {{ topic.get_last_comment.updated_on }}</small></span></a></li>
+                      <li><a href="{% url 'users:view_profile' topic.get_last_comment.commented_by.id topic.get_last_comment.commented_by.username %}"><img src="{% if topic.get_last_comment.commented_by|user_profile_pic %}{% thumbnail topic.get_last_comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Last Replied By<small>{{ topic.get_last_comment.commented_by.username }}, {{ topic.get_last_comment.updated_on }}</small></span></a></li>
                       {% endif %}
                       <div class="clearfix"></div>
                     </ul>
@@ -166,7 +166,7 @@
                 <div class="view_content_description">
                   <div class="other_views">
                     <ul>
-                      <li><a href="#"><img src="{% if comment.commented_by|user_profile_pic %}{% thumbnail comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Replied By<small>{{ comment.commented_by.username }}</small></span></a></li>
+                      <li><a href="{% url 'users:view_profile' comment.commented_by.id comment.commented_by.username %}"><img src="{% if comment.commented_by|user_profile_pic %}{% thumbnail comment.commented_by|user_profile_pic "100x100" upscale=True  %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> <span class="text">Replied By<small>{{ comment.commented_by.username }}</small></span></a></li>
                     </ul>
                     <div class="follow_votes">
                       <span class="votes"><a href="#" class="loss vote_topic comment_down_vote" data-href="{% url "myforum:comment_vote_down" comment.id %}"><i class="fa fa-minus"></i><span class="comment_down_votes_count">{{ comment.down_votes_count }}</span></a>Votes<a href="#" class="gain vote_topic comment_up_vote" data-href="{% url "myforum:comment_vote_up" comment.pk %}"><i class="fa fa-plus"></i><span class="comment_up_votes_count">{{ comment.up_votes_count }}</span></a></span>
