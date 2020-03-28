@@ -24,12 +24,17 @@ ALLOWED_HOSTS = ["*", "djangoafrica.com"]
 # DATABASES
 # ------------------------------------------------------------------------------
 
-# DATABASE_URL = 'postgres://vvusfbstdseymi:02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3@ec2-34-200-101-236.compute-1.amazonaws.com:5432/db9fu9ast3jhp3'
+DATABASE_URL = 'postgres://vvusfbstdseymi:02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3@ec2-34-200-101-236.compute-1.amazonaws.com:5432/db9fu9ast3jhp3'
+
 DATABASES = {
-    "default":
-        {'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': os.path.join(ROOT_DIR, 'db.sqlite3')
-         }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db9fu9ast3jhp3',
+        'USER': 'vvusfbstdseymi',
+        'PASSWORD': '02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3',
+        'HOST': 'ec2-34-200-101-236.compute-1.amazonaws.com',
+        'PORT': '5432',
+    }
 }
 
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
