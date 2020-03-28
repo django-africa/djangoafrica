@@ -7,6 +7,8 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 
 import psycopg2
+import dj_database_url
+
 from .base import *  # noqa
 from .base import env
 
@@ -37,6 +39,7 @@ DATABASES = {
     }
 }
 
+DATABASES = {'default': dj_database_url.config()}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
 # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
