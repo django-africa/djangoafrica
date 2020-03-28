@@ -7,6 +7,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 
 import psycopg2
+import django_heroku
 import dj_database_url
 
 from .base import *  # noqa
@@ -236,3 +237,4 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+django_heroku.settings(locals())
