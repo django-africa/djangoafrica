@@ -40,7 +40,7 @@
                     <span class="follow" ><a href="#" class="follow_topic" data-href="{% url "myforum:follow_topic" topic.slug %}">{% if topic.id|is_topic_followed:request.user.id %}Followed{% else %}Follow{% endif %}</a></span>
                     {% endif %}
                     <span class="votes"><a href="#" class="loss vote_topic" id="down_vote" data-href="{% url "myforum:topic_vote_down" topic.slug %}"><i class="fa fa-minus"></i><span id="down_votes">{{ topic.down_votes_count }}</span></a>Votes<a href="#" class="gain vote_topic" id="up_vote" data-href="{% url "myforum:topic_vote_up" topic.slug %}"><i class="fa fa-plus"></i><span id="up_votes">{{ topic.up_votes_count }}</span></a></span>
-                    <span class="follow" ><a href="#" class="solved_topic" data-href="#">Sloved</a></span>
+<!--                     <span class="follow" ><a href="#" class="solved_topic" data-href="#">Sloved</a></span> -->
                   </div>
 
                   <p>{{topic.description|safe}}</p>
