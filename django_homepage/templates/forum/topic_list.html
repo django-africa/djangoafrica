@@ -22,7 +22,7 @@
                  {% for topic in topic_list %}
                   <div class="topic_block">
                     <div class="topic_title">
-                     {% if topic.created_by == request.user %}
+                     {% if request.user.is_authenticated %}
                     <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
                       {% else %}
                       <a>{{ topic.title }}</a>
