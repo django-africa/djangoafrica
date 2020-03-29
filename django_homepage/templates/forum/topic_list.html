@@ -25,6 +25,8 @@
                      {% if topic.created_by == request.user %}
                     <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
                       {% endif %}
+                      <a>{{ topic.title }}</a>
+                      {% endif %}
                     </div>
                     <div class="topic_options">
                      <span class="category"><a href="#" class="gaming">{{ topic.category.title }} </a></span><span class="activity">Updated on {{ topic.updated_on }}</span>
