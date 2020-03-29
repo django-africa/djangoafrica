@@ -20,7 +20,7 @@
                  <!-- topic_block starts here -->
                   <h3 class="create_topic_heading">All Topics <span class="pull-right sort_options">{% if request.user.is_authenticated %}<a href="{% url "myforum:new_topic" %}">New Topic</a>{% endif %}</span></h3>
                  {% for topic in topic_list %}
-                  <div class="topic_block btn btn-danger">
+                  <div class="topic_block">
                     <div class="topic_title">
                     <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
                     </div>
