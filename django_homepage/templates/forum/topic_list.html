@@ -31,9 +31,7 @@
                     </div>
                     <div class="topic_users">
                       <ul class="users_list">
-<!--                         {% for user in topic.get_topic_users %}
-                          <li><a href="{% url "myforum:view_profile" user.user.id user.user.username %}" title="{{ user.user.username }}"><img src="{% if user.profile_pic %}{% thumbnail user.profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"></a></li>
-                        {% endfor %} -->
+
                       </ul>
                       {% if topic.created_by == request.user %}
                         <a href="{% url 'myforum:topic_update' topic.slug %}"> Update</a>
