@@ -24,7 +24,7 @@
                     <div class="topic_title">
                      {% if topic.created_by == request.user %}
                     <a href="{% url "myforum:view_topic" topic.slug %}">{{ topic.title }}</a>
-                      {% endif %}
+                      {% else %}
                       <a>{{ topic.title }}</a>
                       {% endif %}
                     </div>
