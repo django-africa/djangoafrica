@@ -16,7 +16,7 @@
                   <div class="user_profile_container">
                     <div class="profile_container">
                       <div class="profile_left">
-                        <img src="{% if request.user.profile.profile_pic %}{% thumbnail request.user.profile.profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}">
+<!--                         <img src="{% if request.user.profile.profile_pic %}{% thumbnail request.user.profile.profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}"> -->
                         {% ifequal request.user.id|slugify user_profile.id|slugify %}
                         <span class="new_logo file_upload"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>
 <!--                         <form name="profilepicform" id="profilepicform">
