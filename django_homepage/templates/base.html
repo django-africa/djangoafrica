@@ -42,7 +42,7 @@
               {% else %}
                 <li><a href="{% url "account_change_password" %}"><i class="fa fa-sign-out"></i> <span>Change Password</span></a></li>
                 <li><a href="{% url "account_logout" %}"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
-                <li><a class='user_profile_pic' href="{% url "users:view_profile" request.user.id request.user.username %}"><img src="{% if request.user|user_profile_pic %}{% thumbnail request.user|user_profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}" class="profile_pic"></img></a></li>
+                <li><a href="{% url "users:view_profile" request.user.id request.user.username %}"><i class="far fa-user-cowboy"></i><<span>Profle</span></a></li>
               {% endif %}
               </ul>
             </div>
