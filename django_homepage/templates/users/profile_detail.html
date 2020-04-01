@@ -19,10 +19,10 @@
                         <img src="{% if request.user.profile.profile_pic %}{% thumbnail request.user.profile.profile_pic "100x100" upscale=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}">
                         {% ifequal request.user.id|slugify user_profile.id|slugify %}
                         <span class="new_logo file_upload"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>
-                        <form name="profilepicform" id="profilepicform">
+<!--                         <form name="profilepicform" id="profilepicform">
                         {% csrf_token %}
                         <input type="file" id='file_input' name="profile_pic" id="profile_pic" style="display: none;" onchange="javascript: submitform()"><input type="submit" id='submit' name="submit" style="display: none;">
-                        </form>
+                        </form> -->
                         <form name="settingsform" id="settingsform">
                         {% csrf_token %}
                         <input type="checkbox" id='sending_mail' name="sending_mail" id="sending_mail" {% if user_profile.send_mailnotifications %}checked{% endif %} value="True" onchange="javascript: submitform2()">Send Email Notifications<input type="submit" id='submit' name="submit" style="display: none;">
