@@ -23,9 +23,9 @@
                   <ul class="category_tags">
                     {% get_tags as tags %}
                   {% for tag in tags %}
-                    <li class="tag_item"><a href="{% url "myforum:forum_tags_detail" tag.slug %}">{{ tag.title }}</a>
+<!--                     <li class="tag_item"><a href="{% url "myforum:forum_tags_detail" tag.slug %}">{{ tag.title }}</a>
                   {% endfor %}
-                  </li>
+                  </li> -->
                   <li class="tag_item"><a href="{% url "myforum:forum_tags" %}">All Tags</a>
                   </ul>
                 </div>
