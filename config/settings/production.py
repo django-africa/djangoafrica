@@ -17,21 +17,25 @@ from .base import env
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["heygency.herokuapp.com", "forum.djangoafrica.com", "djangoafrica.com"])
+
 # DATABASES
 # ------------------------------------------------------------------------------
+DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
+DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
 
-DATABASE_URL = 'postgres://vvusfbstdseymi:02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3@ec2-34-200-101-236.compute-1.amazonaws.com:5432/db9fu9ast3jhp3'
+# DATABASE_URL = 'postgres://vvusfbstdseymi:02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3@ec2-34-200-101-236.compute-1.amazonaws.com:5432/db9fu9ast3jhp3'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db9fu9ast3jhp3',
-        'USER': 'vvusfbstdseymi',
-        'PASSWORD': '02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3',
-        'HOST': 'ec2-34-200-101-236.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'db9fu9ast3jhp3',
+#         'USER': 'vvusfbstdseymi',
+#         'PASSWORD': '02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3',
+#         'HOST': 'ec2-34-200-101-236.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 DATABASES = {'default': dj_database_url.config()}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
