@@ -14,6 +14,7 @@ urlpatterns = [
     path("users/", include("django_homepage.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
     path("", include("djafforum.urls", namespace="myforum")),
     path("ckeditor/", include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
