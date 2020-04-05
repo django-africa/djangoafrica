@@ -13,35 +13,17 @@ from .base import *  # noqa
 from .base import env
 
 # GENERAL
-# ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
-    "DJANGO_SECRET_KEY",
-    default="JgTDlU0Q057nkaNp2QCwz8L8X7Sm4mmIRATqrxN7Tg9G4E1U4IS6NddaeiIwud0Z",
-)
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-
-ALLOWED_HOSTS = ["*", "djangoafrica.com"]
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["heygency.herokuapp.com", "forum.djangoafrica.com", "djangoafrica.com"])
 
 # DATABASES
 # ------------------------------------------------------------------------------
-
-DATABASE_URL = 'postgres://vvusfbstdseymi:02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3@ec2-34-200-101-236.compute-1.amazonaws.com:5432/db9fu9ast3jhp3'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db9fu9ast3jhp3',
-        'USER': 'vvusfbstdseymi',
-        'PASSWORD': '02ee2ccb6ee4213b33e3cf3e958da78c70036c5b1426066754a31faeb4e92ed3',
-        'HOST': 'ec2-34-200-101-236.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
-
-DATABASES = {'default': dj_database_url.config()}
+DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
-# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
+
 
 CACHES
 ------------------------------------------------------------------------------
@@ -147,15 +129,47 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
     "DJANGO_DEFAULT_FROM_EMAIL", default="djangoafrica forum <noreply@djangoafrica.com>"
+<<<<<<< HEAD
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = env(
     "DJANGO_EMAIL_SUBJECT_PREFIX", default="[djangoafrica forum]"
+=======
+>>>>>>> ce7bb7937445ff50106ff337d4cf15a4b0484b82
 )
 
 # ADMIN
+<<<<<<< HEAD
+=======
+# ------------------------------------------------------------------------------
+# Django Admin URL regex.
+ADMIN_URL = env("DJANGO_ADMIN_URL")
+
+# Anymail (Mailgun)
+# ------------------------------------------------------------------------------
+# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+INSTALLED_APPS += ["anymail"]  # noqa F405
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+# https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
+ANYMAIL = {
+    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_DOMAIN"),
+    "MAILGUN_API_URL": env("MAILGUN_API_URL", default="https://api.eu.mailgun.net/v3"),
+}
+
+# # django-compressor
+# # ------------------------------------------------------------------------------
+# # https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_ENABLED
+# COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
+# # https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_STORAGE
+# COMPRESS_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# # https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_URL
+# COMPRESS_URL = STATIC_URL  # noqa F405
+
+# LOGGING
+>>>>>>> ce7bb7937445ff50106ff337d4cf15a4b0484b82
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
 ADMIN_URL = env("DJANGO_ADMIN_URL")
