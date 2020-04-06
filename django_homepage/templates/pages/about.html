@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% load i18n static %}
+
+  {% block extra_cs %}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+    <link rel="stylesheet" href="{% static 'styles/css/global.min.css' %}" />
+    <link rel="stylesheet" href="http://www.jqueryscript.net/css/jquerysctipttop.css" />
+    <link rel="stylesheet" href="{% static 'styles/css/index.min.css' %}" />
+  {% endblock %}
+
   {% block content %}
     <!-- about us -->
       <section class="homepage">
@@ -131,4 +142,19 @@
                     </div>
                 </div>
     </section>
+  {% endblock %}
+
+  {% block extra_js %}
+    <script src="{% static 'js/vendor/jquery.min.js' %}"></script>
+    <script src="{% static 'js/vendor/popper.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/vendor/isotope.pkgd.js' %}"></script>
+
+
+    <script src="{% static 'js/vendor/jquery.singlePageNav.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
+    <script src="{% static 'js/wavify.js' %}"></script>
+    <script src="{% static 'js/jquery.wavify.js' %}"></script>
   {% endblock %}

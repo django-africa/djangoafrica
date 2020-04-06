@@ -1,0 +1,135 @@
+body {
+  overflow-x: hidden;
+  line-height: 1.8;
+  font-size: 16px; }
+
+html {
+  overflow-x: hidden; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  text-transform: capitalize;
+  color: #fff;
+  line-height: 1.8; }
+
+p {
+  color: rgba(255, 255, 255, 0.705);
+  font-size: 18px; }
+
+img {
+  width: 100%; }
+
+.wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 480px;
+  bottom: 480px;
+  z-index: 2; }
+
+.wave + .wave {
+  z-index: 1; }
+
+@keyframes moveInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px); }
+  70% {
+    transform: translate(15px); }
+  100% {
+    opacity: 1;
+    transform: translate(0); } }
+
+@keyframes moveInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px); }
+  70% {
+    transform: translate(15px); }
+  100% {
+    opacity: 1;
+    transform: translate(0); } }
+
+a {
+  font-weight: 200 !important;
+  text-transform: capitalize;
+  color: #fff !important; }
+
+.btn-regular {
+  background: transparent;
+  text-align: center;
+  text-transform: capitalize;
+  border: 1px solid #fff;
+  color: #fff;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 1rem;
+  border: 0.5px solid #fff;
+  font-weight: 400;
+  line-height: 2;
+  transition: all .2s; }
+  .btn-regular :focus {
+    outline: 0;
+    box-shadow: none; }
+
+.btn-card {
+  background: #336;
+  color: #fff;
+  padding-left: 4rem;
+  padding-right: 4rem; }
+
+.btn-purple {
+  background: #610aad; }
+
+.btn:link, .btn:visited {
+  text-align: center;
+  text-transform: capitalize;
+  border: 1px solid #fff;
+  color: #fff;
+  font-size: 1rem;
+  border: 0.5px solid #fff;
+  font-weight: 400;
+  line-height: 2; }
+
+.btn:focus {
+  box-shadow: none;
+  outline: 0; }
+
+.btn:hover {
+  background: #610aad;
+  cursor: pointer;
+  transform: translateY(-3px); }
+
+.btn:active {
+  transform: translateY(-1px); }
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background: linear-gradient(to bottom left, #a43ee8, #752ef6);
+  opacity: .9;
+  z-index: -8; }
+
+.title-border {
+  position: relative; }
+  .title-border::before, .title-border::after {
+    position: absolute;
+    content: "";
+    height: 4px;
+    bottom: 1px;
+    margin: auto;
+    left: 0px;
+    right: 0px; }
+  .title-border::before {
+    width: 150px;
+    background: rgba(128, 128, 128, 0.753); }
+  .title-border::after {
+    width: 90px;
+    background: #610aad; }
+
+.pricing__card {
+  color: #000000cc;
+  align-items: center; }
