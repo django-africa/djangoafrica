@@ -361,7 +361,7 @@ img {
     display: none; } }
 
 .about {
-  background: #e3e3e8;
+  background: #6f5050;
   padding-bottom: 5rem;
   padding-top: 5rem; }
   @media (max-width: 75em) {
@@ -417,7 +417,7 @@ img {
         z-index: 20; }
 
 .feature-page1 {
-  background: #373755;
+  background: #967765;
   background-size: cover;
   color: white;
   position: relative;
