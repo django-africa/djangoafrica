@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+<body>
+{% block content %}
+<form class="form-horizontal" method="post" action="contact/">
+  {% csrf_token %}
+      {{ form.as_p}}
+  <button type="submit">Submit</button>
+</form>
+{% endblock %}
+</body>

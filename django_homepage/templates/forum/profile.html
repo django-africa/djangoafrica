@@ -11,11 +11,12 @@
             <div class="panel panel-default">
               <div class="panel-body">
                 <div class="view_topic_container">
-                  <h3 class="create_topic_heading">User Profile</h3>
+                  <h4 class="create_topic_heading">User Profile</h4>
+                  <a href="{% url 'leaderboard:index' %}"><span class="glyphicon-briefcase"></span></a>
                   <div class="user_profile_container">
                     <div class="profile_container">
                       <div class="profile_left">
-                        <img src="{% if request.user|user_profile_pic %}{% thumbnail request.user|user_profile_pic "100x100" upscale=True padding=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}">
+                        <img src="{% if request.user|user_profile_pic %}{% thumbnail request.user|user_profile_pic "101x100" upscale=True padding=True %}{% else %}//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg{% endif %}">
                         {% ifequal request.user.id|slugify user_profile.user.id|slugify %}
                         <span class="new_logo file_upload"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>
                         <form name="profilepicform" id="profilepicform"><input type="file" id='file_input' name="profile_pic" id="profile_pic" style="display: none;" onchange="javascript: submitform()"><input type="submit" id='submit' name="submit" style="display: none;">
