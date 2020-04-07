@@ -780,8 +780,7 @@ img {
 
 .footer-page2 {
   padding-top: 15rem;
-  padding-bottom: 2.5rem;
-  background: url(../../images/Footer_Section.png); }
+  padding-bottom: 2.5rem; }
   @media (max-width: 56.25em) {
     .footer-page2 {
       padding-top: 7rem;
