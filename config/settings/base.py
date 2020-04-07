@@ -79,6 +79,7 @@ THIRD_PARTY_APPS = [
     "simple_pagination",
     "ckeditor",
     "ckeditor_uploader",
+    'hitcount',
 ]
 
 LOCAL_APPS = [
