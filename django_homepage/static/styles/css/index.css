@@ -501,7 +501,6 @@ img {
     font-size: 1.5rem; }
 
 .history {
-  background: url(../../images/work_1.png);
   background-size: cover;
   color: #000000cc;
   padding: 45px;
@@ -510,7 +509,6 @@ img {
   outline: 15px solid #fff; }
 
 .Satire {
-  background: url(../../images/work_2.png);
   background-size: cover;
   color: #000000cc;
   padding: 45px;
@@ -519,7 +517,6 @@ img {
   outline: 15px solid #fff; }
 
 .fiction {
-  background: url(../../images/work_3.png);
   background-size: cover;
   color: #000000cc;
   padding: 45px;
@@ -528,7 +525,6 @@ img {
   outline: 15px solid #fff; }
 
 .Basic-Civitas {
-  background: url(../../images/work_1.png);
   background-size: cover;
   color: #111;
   padding: 45px;
