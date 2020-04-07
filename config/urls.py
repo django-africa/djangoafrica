@@ -25,7 +25,7 @@ urlpatterns += [
     # DRF auth token
     path("auth-token/", obtain_auth_token),
     #Anymail
-    path("anymail/", include('anymail.urls')),
+    # path("anymail/", include('anymail.urls')),
 ]
 
 if settings.DEBUG:

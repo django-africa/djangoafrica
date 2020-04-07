@@ -34,8 +34,10 @@ body {
   .container {
     width: 100%; } }
 
+
 a:hover {
-  text-decoration: none; }
+  text-decoration: none;
+  color: #d41625 !important; }
 
 header .navbar-default {
   background: #967766;
@@ -163,7 +165,7 @@ header .navbar-default {
       border-bottom: 1px solid #e8e8e8; }
       .main_container .middle_container .main_left_container .panel .topic_container .topic_block .topic_title a {
         font-weight: 400;
-        color: #444;
+        color: rgb(194, 26, 26);
         font-size: 16px;
         margin: 8px 0;
         margin-top: 0;

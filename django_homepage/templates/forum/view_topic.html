@@ -459,7 +459,7 @@ function auto_link(link_id){
   $(link_id).each(function(){
     $(this).html( $(this).html().replace(/(@[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/gi, '<a href="$1">$1</a> ') );
     $(this).children().each(function(){
-      var url = "{% url 'users:detail' user.username %}"
+      var url = ""
       $(this).attr('href', url);
     });
   });

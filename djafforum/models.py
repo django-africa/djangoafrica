@@ -4,10 +4,12 @@ from datetime import datetime
 
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import slugify
+
+from hitcount.models import HitCount, HitCountMixin
 
 
 User = get_user_model()
@@ -75,7 +77,7 @@ class Tags(models.Model):
 
 
 
-class Topic(models.Model):
+class Topic(models.Model, HitCountMixin):
     title = models.CharField(max_length=2000)
     description = RichTextUploadingField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_topic')
@@ -84,6 +86,9 @@ class Topic(models.Model):
     created_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
     no_of_views = models.IntegerField(default='0')
+    hit_count_generic = GenericRelation(
+        HitCount, object_id_field='object_pk',
+        related_query_name='hit_count_generic_relation')
     slug = models.SlugField(max_length=1000)
     tags = models.ManyToManyField(Tags)
     no_of_likes = models.IntegerField(default='0')

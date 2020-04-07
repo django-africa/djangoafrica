@@ -19,6 +19,8 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
 
+from hitcount.views import HitCountDetailView
+
 User = get_user_model()
 
 def timeline_activity(user, content_object, namespace, event_type):
@@ -129,8 +131,10 @@ class TopicAdd(LoginRequiredMixin, CreateView):
             is_active=True, is_votable=True).exclude(parent=None)
         return context
 
-class TopicView(TemplateView):
+class TopicView(HitCountDetailView, DetailView):
     template_name = 'forum/view_topic.html'
+
+    count_hit = True
 
     def get_object(self):
         return get_object_or_404(Topic, slug=self.kwargs['slug'])
@@ -138,18 +142,10 @@ class TopicView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TopicView, self).get_context_data(**kwargs)
         context['topic'] = self.get_object()
-        user_profile = get_object_or_404(User, username=self.request.user.username)
-        context['user_profile'] = user_profile
+        # # user_profile = get_object_or_404(User, username=self.request.user.username)
+        # context['user_profile'] = user_profile
         suggested_topics = Topic.objects.filter(
             category=self.get_object().category).exclude(id=self.get_object().id)
-        job_url = 'http://' + self.request.META['HTTP_HOST'] + reverse(
-            'myforum:view_topic', kwargs={'slug': self.get_object().slug})
-        try:
-            minified_url = google_mini(job_url, settings.MINIFIED_URL)
-        except:
-            minified_url = job_url
-
-        context['minified_url'] = minified_url
         context['suggested_topics'] = suggested_topics
         return context
 
