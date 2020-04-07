@@ -267,7 +267,6 @@ img {
     transform: rotateY(0); }
 
 .homepage {
-  background: url(../../images/Header.png);
   padding-bottom: 28.1rem;
   z-index: 1;
   position: relative;
