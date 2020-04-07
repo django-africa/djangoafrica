@@ -76,7 +76,7 @@
                   <div class="topic_count">
                     <span class="category"><a href="#" class="disclosure">{{ topic.category.title }} </a></span>
                     <span class="reply"><i class="fa fa-reply"></i>Replies {{ topic.get_all_comments|length }} </span>
-                    <span class="views"><i class="fa fa-eye"></i> Views {{ topic.no_of_views }} </span>
+                    <span class="views"><a href="#"><i class="fa fa-eye"></i> Views {{ topic.hit_count.hits }} </a></span>
                     <span class="users"><i class="fa fa-users" aria-hidden="true"></i> Users <span class="no_of_users">{{ topic.get_topic_users|length }}</span> </span>
                   </div>
                   <div class="user_options pull-right">
