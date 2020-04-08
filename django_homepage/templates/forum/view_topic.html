@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load forum_tags %}
 {% load thumbnail %}
+{% load social_share %}
 {% block content %}
 <style type="text/css">
   .active{
@@ -31,6 +32,11 @@
               <div class="main_view_container">
                 <div class="view_content_description">
                   <h3 class="create_topic_heading">{{ topic.title|capfirst }}</h3>
+                  <button type="button" class="btn btn-link">{% post_to_twitter "New Django Forum Content: {{topic.title}}. Check it out!" object_or_url "Post to Twitter" %}<i class="fab fa-twitter"></i></button>
+                  <button type="button" class="btn btn-link">{% post_to_linkedin "New Django Forum Content: {{topic.title}}. Check it out!" object_or_url "Post to LinkedIn" %}<i class="fab fa-linkedin"></i></button>
+                  <button type="button" class="btn btn-link">{% post_to_whatsapp object_or_url "Share Via WhatsApp" %}<i class="fab fa-whatsapp"></i></button>
+                  <button type="button" class="btn btn-link">{% post_to_facebook object_or_url "Post to Facebook" %}<i class="fab fa-facebook"></i></button>
+                  <button type="button" class="btn btn-link">{% post_to_telegram "New Django Forum Content: {{topic.title}}. Check it out!" object_or_url "Share Via Telegram" %}<i class="fab fa-telegram"></i></button>
                   {% if topic.created_by == request.user %}
                     <a href="{% url 'myforum:topic_update' topic.slug %}"> Update</a>
                     <a href="{% url 'myforum:delete_topic' topic.slug %}"> delete </a>
