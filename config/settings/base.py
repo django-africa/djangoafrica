@@ -80,6 +80,7 @@ THIRD_PARTY_APPS = [
     "ckeditor",
     "ckeditor_uploader",
     'hitcount',
+    'django_social_share',
 ]
 
 LOCAL_APPS = [
