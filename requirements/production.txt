@@ -1,3 +1,5 @@
+-r ./base.txt
+
 django-heroku
 alabaster==0.7.12
 amqp==2.5.2
