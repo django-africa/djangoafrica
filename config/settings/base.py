@@ -64,7 +64,6 @@ DJANGO_APPS = [
     "django.contrib.admin",
     "django.forms",
     # apps
-    "leaderboard",
     "phone_field",
     "six",
 ]

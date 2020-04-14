@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from phone_field import PhoneField
 
 from djafforum.models import Topic, Timeline, Tags, ForumCategory
 
@@ -30,6 +31,7 @@ def img_url(self, filename):
         str(filename).encode('utf-8') + str(datetime.now()).encode('utf-8'))
     file_hash = hash_.hexdigest()
     return "%s%s/%s" % (self.file_prepend, file_hash, filename)
+
 
 class Badge(models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -108,7 +110,39 @@ class Profile(models.Model):
         db_table = 'profile'
 
 
-# Auto-create Profile model on User model creation
+class Contact(models.Model):
+    business_name = models.OneToOneField(Profile, max_length=500, on_delete=models.CASCADE)
+    github_profile_link = models.URLField(help_text="Your github profile link")
+    mobile_number = PhoneField(blank=False, help_text='Contact phone number')
+    email_address = models.EmailField()
+
+    def __str__(self):
+        return self.business_name
+
+
+class Skill(models.Model):
+    choices = (
+        ('junior dev', '1-2years'),
+        ('senior dev', '3-5years'),
+        ('expert', '6years and above'),
+    )
+    skill = models.CharField(max_length=350)
+    years_of_experience = models.CharField(choices=choices, max_length=350)
+
+    def __str__(self):
+        return self.skill
+
+class Project(models.Model):
+    github_project_link = models.URLField(help_text="Link to your project on Github")
+    project_url = models.URLField(help_text="Project URL")
+    thumbnail = models.ImageField()
+
+    def __str__(self):
+        return self.github_project_link
+
+    # Auto-create Profile model on User model creation
+
+
 @receiver(post_save, sender=get_user_model())
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -124,4 +158,3 @@ class UserTopics(models.Model):
     no_of_votes = models.IntegerField(default='0')
     no_of_down_votes = models.IntegerField(default='0')
     is_like = models.BooleanField(default=False)
-

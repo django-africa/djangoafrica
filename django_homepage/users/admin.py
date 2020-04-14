@@ -16,3 +16,9 @@ class UserAdmin(auth_admin.UserAdmin):
     search_fields = ["name"]
 
 admin.site.register(models.Badge)
+admin.site.register(models.Project)
+admin.site.register(models.Contact)
+admin.site.register(models.Skill)
+
+
+

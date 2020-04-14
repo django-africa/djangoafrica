@@ -1,12 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.generic import DetailView, RedirectView, UpdateView, View
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from .models import *
+from .models import Project, Contact, Skill
+# from leaderboard.models import Project, Skill, Contact
 from django.http import JsonResponse
 
 
@@ -30,8 +33,8 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         context['user'] = self.get_object()
         return context
 
-    def post(self, request, *args, **kwargs):
-        pass
+    # def post(self, request, *args, **kwargs):
+    #     pass
 
 
 
@@ -180,3 +183,92 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 
 user_update_view = UserUpdateView.as_view()
+
+
+class UserContactUpdate(View):
+    
+    model = Contact
+    fields = ["github_profile_link", "phone_number", "email_address"]
+    git = "https://www.github.com/"
+    
+    def get_object(self):
+        return get_object_or_404(Contact)
+
+    def get_success_url(self):
+        return reverse("users:view_profile")
+
+    # def post(self, request, *args, **kwargs):
+    #     contact = self.get_object()
+    #     contact.github_profile_link = self.git + request.POST['github_username']
+    #     contact.mobile_number = request.POST['mobile_number']
+    #     contact.email_address = request.POST['email']
+    #     contact.save()
+    #     print ("contact link is" + contact.github_profile_link,
+    #             "mobile number is" + contact.mobile_number,
+    #             "email adress is " + contact.email_address)
+    #     return HttpResponse("contact saved")
+        
+update_contact = UserContactUpdate.as_view()       
+
+# def update_contact(request):
+#     git = "https://www.github.com/"
+#     if request.method=='POST':
+#         contact = Contact.objects.get()
+#         contact.github_profile_link = git + request.POST['github_username']
+#         contact.mobile_number = request.POST['mobile_number']
+#         contact.email_address = request.POST['email']
+#         contact.save()
+#         message = "Contact updated"
+#         return HttpResponse(message)
+
+class UserProjectUpdate(View):
+    model = Project
+
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(Project)
+    
+    def post(self, request):
+        project = self.get_object()
+        project.github_project_link = request.POST['github_project_link']
+        project.project_url = request.POST['project_url']
+        project.save()
+        message = "Project updated"
+        return HttpResponse(message)
+
+project_update = UserProjectUpdate.as_view()
+
+# def project_update(request):
+#     if request.method=='POST':
+#         project = get_object_or_404(Project,)
+#         project.github_project_link = request.POST['github_project_link']
+#         project.project_url = request.POST['project_url']
+#         project.save()
+#         message = "Project updated"
+#         return HttpResponse(message)
+    
+           
+# class UserSkillUpdate(View):
+#     model : Skill
+
+#     def get_object(self, *args, **kwargs):
+#         return get_object_or_404(Skill)
+    
+#     def post(self, request):
+#         skill = self.get_object()
+#         skill.skill= request.POST['skill']
+#         skill.years_of_experience = request.POST['duration']
+#         skill.save()
+#         message = "Contact updated"
+#         return HttpResponse(message)
+
+# skill_update = UserSkillUpdate.as_view()
+
+def skill_update(request):
+    print("Hey hello")
+    if request.method=='POST':
+        skill = Skill.objects.get()
+        skill.skill= request.POST['skill']
+        skill.years_of_experience = request.POST['duration']
+        skill.save()
+        message = "Contact updated"
+        return HttpResponse(message)
