@@ -2,6 +2,10 @@
 {% load forum_tags %}
 {% load thumbnail %}
 {% load social_share %}
+{% block description %}
+{{topic.description[100:]}}
+{% endblock description %}
+
 {% block content %}
 <style type="text/css">
   .active{
