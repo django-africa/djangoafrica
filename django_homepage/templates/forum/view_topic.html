@@ -2,13 +2,14 @@
 {% load forum_tags %}
 {% load thumbnail %}
 {% load social_share %}
-{% block description %}
-{{topic.title}}
-{% endblock description %}
 
 {% block head_title %}
 {{topic.title}}
 {% endblock head_title %}
+
+{% block description %}
+{{topic.title}}
+{% endblock description %}
 
 {% block content %}
 <style type="text/css">
