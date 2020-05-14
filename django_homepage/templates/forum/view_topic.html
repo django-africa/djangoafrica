@@ -6,7 +6,7 @@
 
 {% block head_title %} {{topic.title}} {% endblock head_title %}
 {% block description %}
-{{topic.title}}
+{{topic.description|safe}}
 {% endblock description %}
 
 {% block content %}
