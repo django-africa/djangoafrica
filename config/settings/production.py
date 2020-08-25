@@ -13,8 +13,16 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["www.djangoafrica.com"
 # DATABASES
 # ------------------------------------------------------------------------------
 DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
+
+DATABASES["new_one"] = env.db("DATABASE_URL_ONE")
+
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
+
+DATABASES["new_one"]["ATOMIC_REQUESTS"] = True
+
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
+
+DATABASES["new_one"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
 
 
 # CACHES

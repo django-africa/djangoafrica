@@ -43,9 +43,11 @@ LOCALE_PATHS = [ROOT_DIR.path("locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    "default": env.db("DATABASE_URL", default=" ")
+    "default": env.db("DATABASE_URL", default=" "),
+    "new_one": env.db("DATABASE_URL_ONE", default=" ")
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["new_one"]["ATOMIC_REQUESTS"] = True
 
 # URLS
 # ------------------------------------------------------------------------------
