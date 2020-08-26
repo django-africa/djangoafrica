@@ -46,7 +46,8 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default=" "),
     "extra": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        env.db("POSTGRES", default=" ")}
+        env.db("POSTGRES", default=" "),
+        },
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 DATABASES["extra"]["ATOMIC_REQUESTS"] = True
