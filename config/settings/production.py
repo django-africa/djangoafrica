@@ -14,7 +14,7 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["www.djangoafrica.com"
 # ------------------------------------------------------------------------------
 DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
 
-DATABASES["extra"] = env.db("DATABASE_URL_ONE")
+DATABASES["extra"] = env.db("POSTGRES")
 
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
 
