@@ -46,12 +46,12 @@ DATABASES = {
     "default": {env.db("DATABASE_URL", default=" "),},
     "extra": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        env.db("POSTGRES", default=" "),
-        #         'NAME': 'myproject',
-#         'USER': 'myprojectuser',
-#         'PASSWORD': 'password',
-#         'HOST': 'localhost',
-#         'PORT': '',
+        # env.db("POSTGRES", default=" "),
+        'NAME': 'd8q62lcvdbre8l',
+        'USER': 'xoqzdxgtliprgf',
+        'PASSWORD': 'acf7257a2e3aa6790a0afdf268ec14777e64b104fbec489a89ea46b6bf65b94c',
+        'HOST': 'ec2-54-197-48-79.compute-1.amazonaws.com',
+        'PORT': '5432',
         },
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
