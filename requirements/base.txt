@@ -57,7 +57,7 @@ ipython==7.13.0
 ipython-genutils==0.2.0
 isort==4.3.21
 jedi==0.16.0
-Jinja2==2.11.1
+Jinja2==2.11.3
 jinja2-time==0.2.0
 kombu==4.6.7
 lazy-object-proxy==1.4.3
