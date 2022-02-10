@@ -22,7 +22,7 @@ coverage==5.0.3
 decorator==4.4.2
 defusedxml==0.6.0
 distlib==0.3.0
-Django==2.2.10
+Django==2.2.27
 django-allauth==0.41.0
 django-appconf==1.0.3
 django-celery-beat==1.6.0
